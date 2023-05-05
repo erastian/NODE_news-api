@@ -4,7 +4,7 @@ import { TYPES } from '../types';
 import { DatabaseService } from '../database/prisma.service';
 
 import { IUsersRepository } from './users.repository.interface';
-import { UserRegisterDto } from './dto/user-register.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @injectable()
 export class UsersRepository implements IUsersRepository {
@@ -22,7 +22,7 @@ export class UsersRepository implements IUsersRepository {
 		return this.databaseService.client.user.findUniqueOrThrow({ where: { id } });
 	}
 
-	async createUser(data: UserRegisterDto): Promise<User> {
+	async createUser(data: CreateUserDto): Promise<User> {
 		return this.databaseService.client.user.create({ data });
 	}
 }

@@ -7,7 +7,9 @@ import { TYPES } from './types';
 import 'reflect-metadata';
 import { IConfigService } from './config/config.service.interface';
 import { DatabaseService } from './database/prisma.service';
+import { AuthMiddleware } from './common/auth.middleware';
 
+import { IAuthController } from './auth/auth.controller.interface';
 import { IArticlesController } from './articles/articles.controller.interface';
 import { ICategoriesController } from './categories/categories.controller.interface';
 import { IUsersController } from './users/users.controller.interface';
@@ -23,6 +25,7 @@ export class App {
 		@inject(TYPES.IExceptionFilter) private exceptionFilter: IExceptionFilter,
 		@inject(TYPES.IConfigService) private configService: IConfigService,
 		@inject(TYPES.DatabaseService) private databaseService: DatabaseService,
+		@inject(TYPES.IAuthController) private authController: IAuthController,
 		@inject(TYPES.IArticlesController) private articlesController: IArticlesController,
 		@inject(TYPES.ICategoriesController) private categoriesController: ICategoriesController,
 		@inject(TYPES.IUsersController) private usersController: IUsersController,
@@ -33,9 +36,12 @@ export class App {
 
 	useMiddleware(): void {
 		this.app.use(express.json());
+		const authMiddleware = new AuthMiddleware(this.configService.get('TOKEN_SECRET'));
+		this.app.use(authMiddleware.execute.bind(authMiddleware));
 	}
 
 	useRoutes(): void {
+		this.app.use('/auth', this.authController.router);
 		this.app.use('/articles', this.articlesController.router);
 		this.app.use('/category', this.categoriesController.router);
 		this.app.use('/users', this.usersController.router);
