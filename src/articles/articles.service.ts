@@ -19,19 +19,19 @@ export class ArticlesService implements IArticlesService {
 		return this.articlesRepository.findAllArticles();
 	}
 
-	getArticleByID(id: number): Promise<Article | Error> {
+	getArticleByID(id: string): Promise<Article | Error> {
 		return this.articlesRepository.findArticleByID(id);
 	}
 
-	createArticle(data: ArticleCreateDto, authorID: number): Promise<Article> {
+	createArticle(data: ArticleCreateDto, authorID: string): Promise<Article> {
 		return this.articlesRepository.createArticle(data, authorID);
 	}
 
-	updateArticle(id: number, data: ArticleUpdateDto): Promise<Article> {
+	updateArticle(id: string, data: ArticleUpdateDto): Promise<Article> {
 		return this.articlesRepository.updateArticle(id, data);
 	}
 
-	deleteArticle(id: number): Promise<Article> {
+	deleteArticle(id: string): Promise<Article> {
 		return this.articlesRepository.deleteArticle(id);
 	}
 }

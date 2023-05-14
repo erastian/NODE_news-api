@@ -4,6 +4,7 @@ export const TYPES = {
 	IExceptionFilter: Symbol.for('IExceptionFilter'),
 	IConfigService: Symbol.for('IConfigService'),
 	DatabaseService: Symbol.for('DatabaseService'),
+	IMailerService: Symbol.for('IMailerService'),
 	IAuthController: Symbol.for('IAuthController'),
 	IArticlesController: Symbol.for('IArticlesController'),
 	ICategoriesController: Symbol.for('ICategoriesController'),

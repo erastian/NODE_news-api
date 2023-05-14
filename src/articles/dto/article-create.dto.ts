@@ -30,7 +30,7 @@ export class ArticleCreateDto implements Omit<Article, 'authorID' | 'id'> {
 
 	@IsDefined()
 	@IsNumber()
-	categoryID: number;
+	categoryID: string;
 
 	@IsEmpty()
 	createdAt: Date;

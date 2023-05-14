@@ -18,8 +18,12 @@ export class UsersService implements IUsersService {
 		return this.usersRepository.findUserByEmail(email);
 	}
 
-	getUserByID(id: number): Promise<User> {
+	getUserByID(id: string): Promise<User> {
 		return this.usersRepository.findUserByID(id);
+	}
+
+	getUserByActivationLink(activationLink: string): Promise<User> {
+		return this.usersRepository.findUserByActivationLink(activationLink);
 	}
 
 	getProfile(): Promise<User> {
@@ -28,5 +32,9 @@ export class UsersService implements IUsersService {
 
 	createUser(data: CreateUserDto): Promise<User> {
 		return this.usersRepository.createUser(data);
+	}
+
+	activateUser(user: User): Promise<User> {
+		return this.usersRepository.activateUser(user.id);
 	}
 }

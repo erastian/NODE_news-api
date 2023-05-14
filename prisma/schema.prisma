@@ -6,23 +6,34 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id           Int       @id @default(autoincrement())
-  username     String
-  email        String    @unique
-  password     String
-  publications Article[]
-  comments     Comment[]
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt()
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  username       String
+  email          String    @unique
+  password       String
+  isActivated    Boolean   @default(false)
+  activationLink String
+  publications   Article[]
+  comments       Comment[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt()
+  Token          Token[]
+}
+
+model Token {
+  id                String @id @default(auto()) @map("_id") @db.ObjectId
+  user              User   @relation(fields: [userID], references: [id])
+  userID            String @db.ObjectId
+  deviceFingerprint String
+  refreshToken      String
 }
 
 model Category {
-  id        Int       @id @default(autoincrement())
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
   title     String    @unique
   url       String    @unique
   articles  Article[]
@@ -31,7 +42,7 @@ model Category {
 }
 
 model Article {
-  id          Int       @id @default(autoincrement())
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
   isPublished Boolean   @default(false)
   title       String
   description String?
@@ -39,22 +50,22 @@ model Article {
   image       String?
   articleBody String?
   author      User      @relation(fields: [authorID], references: [id])
-  authorID    Int
+  authorID    String    @db.ObjectId
   category    Category  @relation(fields: [categoryID], references: [id])
-  categoryID  Int
+  categoryID  String    @db.ObjectId
   comments    Comment[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
 
 model Comment {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   isPublished Boolean  @default(false)
   commentBody String
   article     Article  @relation(fields: [articleID], references: [id])
-  articleID   Int
+  articleID   String   @db.ObjectId
   author      User     @relation(fields: [authorID], references: [id])
-  authorID    Int
+  authorID    String   @db.ObjectId
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

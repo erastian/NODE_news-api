@@ -36,7 +36,7 @@ export class App {
 
 	useMiddleware(): void {
 		this.app.use(express.json());
-		const authMiddleware = new AuthMiddleware(this.configService.get('TOKEN_SECRET'));
+		const authMiddleware = new AuthMiddleware(this.configService.get('JWT_ACCESS_SECRET'));
 		this.app.use(authMiddleware.execute.bind(authMiddleware));
 	}
 

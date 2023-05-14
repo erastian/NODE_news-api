@@ -8,6 +8,8 @@ import { TYPES } from './types';
 import { IConfigService } from './config/config.service.interface';
 import { ConfigService } from './config/config.service';
 import { DatabaseService } from './database/prisma.service';
+import { MailerService } from './mailer/mailer.service';
+import { IMailerService } from './mailer/mailer.service.interface';
 
 import { AuthController } from './auth/auth.controller';
 import { IAuthController } from './auth/auth.controller.interface';
@@ -42,6 +44,7 @@ export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
 	bind<IExceptionFilter>(TYPES.IExceptionFilter).to(ExceptionFilter);
 	bind<DatabaseService>(TYPES.DatabaseService).to(DatabaseService).inSingletonScope();
 	bind<IConfigService>(TYPES.IConfigService).to(ConfigService).inSingletonScope();
+	bind<IMailerService>(TYPES.IMailerService).to(MailerService).inSingletonScope();
 	bind<IAuthController>(TYPES.IAuthController).to(AuthController).inSingletonScope();
 	bind<IArticlesController>(TYPES.IArticlesController).to(ArticlesController).inSingletonScope();
 	bind<ICategoriesController>(TYPES.ICategoriesController).to(CategoriesController).inSingletonScope();

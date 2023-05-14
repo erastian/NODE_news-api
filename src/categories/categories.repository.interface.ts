@@ -6,5 +6,5 @@ export interface ICategoriesRepository {
 	findAllCategories: () => Promise<Category[]>;
 	findCategoryByURL: (url: string) => Promise<Category>;
 	createCategory: (data: CategoryCreateDto) => Promise<Category>;
-	updateCategory: (id: number, data: CategoryUpdateDto) => Promise<Category>;
+	updateCategory: (id: string, data: CategoryUpdateDto) => Promise<Category>;
 }

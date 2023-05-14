@@ -3,8 +3,8 @@ import { ArticleCreateDto } from './dto/article-create.dto';
 import { ArticleUpdateDto } from './dto/article-update.dto';
 export interface IArticlesService {
 	getAllArticles: () => Promise<Article[]>;
-	getArticleByID: (id: number) => Promise<Article | Error>;
-	createArticle: (data: ArticleCreateDto, authorID: number) => Promise<Article>;
-	updateArticle: (id: number, data: ArticleUpdateDto) => Promise<Article>;
-	deleteArticle: (id: number) => Promise<Article>;
+	getArticleByID: (id: string) => Promise<Article | Error>;
+	createArticle: (data: ArticleCreateDto, authorID: string) => Promise<Article>;
+	updateArticle: (id: string, data: ArticleUpdateDto) => Promise<Article>;
+	deleteArticle: (id: string) => Promise<Article>;
 }

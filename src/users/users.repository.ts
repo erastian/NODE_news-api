@@ -18,11 +18,24 @@ export class UsersRepository implements IUsersRepository {
 		return this.databaseService.client.user.findUniqueOrThrow({ where: { email } });
 	}
 
-	async findUserByID(id: number): Promise<User> {
+	async findUserByID(id: string): Promise<User> {
 		return this.databaseService.client.user.findUniqueOrThrow({ where: { id } });
+	}
+
+	async findUserByActivationLink(activationLink: string): Promise<User> {
+		return this.databaseService.client.user.findFirstOrThrow({ where: { activationLink } });
 	}
 
 	async createUser(data: CreateUserDto): Promise<User> {
 		return this.databaseService.client.user.create({ data });
+	}
+
+	async activateUser(id: string): Promise<User> {
+		return this.databaseService.client.user.update({
+			where: { id },
+			data: {
+				isActivated: true,
+			},
+		});
 	}
 }

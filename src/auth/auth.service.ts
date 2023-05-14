@@ -6,6 +6,8 @@ import bcrypt from 'bcryptjs';
 import { StatusCodes } from 'http-status-codes';
 import { HTTPError } from '../services/errors/http-error.class';
 import jwt, { Secret } from 'jsonwebtoken';
+import { v4 } from 'uuid';
+import { IMailerService } from '../mailer/mailer.service.interface';
 
 import { IAuthService } from './auth.service.interface';
 import { UserRegisterDto } from './dto/user-register.dto';
@@ -15,17 +17,36 @@ import { IUsersService } from '../users/users.service.interface';
 export class AuthService implements IAuthService {
 	constructor(
 		@inject(TYPES.IConfigService) private configService: IConfigService,
+		@inject(TYPES.IMailerService) private mailerService: IMailerService,
 		@inject(TYPES.IUsersService) private usersService: IUsersService,
 	) {}
 
 	async registerUser({ username, email, password }: UserRegisterDto): Promise<User> {
 		const hashedPassword = await this.cryptPassword(password);
+		const activationLink = v4();
 
-		return await this.usersService.createUser({
+		const user = await this.usersService.createUser({
 			username,
 			email,
 			password: hashedPassword,
+			activationLink,
 		});
+		const activationURL = `http://${this.configService.get(
+			'API_URL',
+		)}/auth/activate/${activationLink}`;
+		await this.mailerService.sendActivationMail(email, username, activationURL);
+
+		return user;
+	}
+
+	async activateUser(activationLink: string): Promise<User> {
+		const user = await this.usersService.getUserByActivationLink(activationLink);
+		if (!user) {
+			throw new HTTPError(StatusCodes.BAD_REQUEST, 'Wrong activation link');
+		}
+		user.isActivated = true;
+		await this.usersService.activateUser(user);
+		return user;
 	}
 
 	async userIsValidated(email: string, rawPassword: string): Promise<User> {
@@ -47,17 +68,25 @@ export class AuthService implements IAuthService {
 		return await bcrypt.hash(rawPassword, salt);
 	}
 
-	async getAuthToken(user: User): Promise<{ token: string }> {
+	async getAuthToken(user: User): Promise<{ token: string; cookie: string }> {
 		const token = jwt.sign(user, this.configService.get('JWT_ACCESS_SECRET') as Secret, {
 			expiresIn: this.configService.get('JWT_ACCESS_SECRET_EXPIRATION'),
 		});
-		return { token };
+		const cookie = `accessToken=${token}; HttpOnly; Max-Age=${this.configService.get(
+			'JWT_ACCESS_SECRET_EXPIRATION',
+		)};`;
+
+		return { token, cookie };
 	}
 
-	async getRefreshToken(user: User): Promise<{ token: string }> {
+	async getRefreshToken(user: User): Promise<{ token: string; cookie: string }> {
 		const token = jwt.sign(user, this.configService.get('JWT_REFRESH_SECRET'), {
 			expiresIn: this.configService.get('JWT_REFRESH_SECRET_EXPIRATION'),
 		});
-		return { token };
+		const cookie = `accessToken=${token}; HttpOnly; Max-Age=${this.configService.get(
+			'JWT_REFRESH_SECRET_EXPIRATION',
+		)};`;
+
+		return { token, cookie };
 	}
 }

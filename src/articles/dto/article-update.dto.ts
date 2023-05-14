@@ -26,11 +26,11 @@ export class ArticleUpdateDto implements Omit<Article, 'authorID' | 'id'> {
 	articleBody: string;
 
 	@IsEmpty()
-	authorID: number;
+	authorID: string;
 
 	@IsOptional()
 	@IsNumber()
-	categoryID: number;
+	categoryID: string;
 
 	@IsEmpty()
 	createdAt: Date;

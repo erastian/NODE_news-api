@@ -27,7 +27,7 @@ export class CategoriesService implements ICategoriesService {
 		return this.categoriesRepository.createCategory(data);
 	}
 
-	updateCategory(id: number, data: CategoryUpdateDto): Promise<Category> {
+	updateCategory(id: string, data: CategoryUpdateDto): Promise<Category> {
 		return this.categoriesRepository.updateCategory(id, data);
 	}
 }

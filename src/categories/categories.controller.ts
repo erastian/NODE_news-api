@@ -71,7 +71,7 @@ export class CategoriesController extends BaseController implements ICategoriesC
 		next: NextFunction,
 	): Promise<void> {
 		try {
-			const id = +params.id;
+			const id = params.id;
 			const result = await this.categoriesService.updateCategory(id, body);
 			this.ok(res, result);
 		} catch (e) {
