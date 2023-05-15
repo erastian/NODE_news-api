@@ -5,6 +5,7 @@ import { inject, injectable } from 'inversify';
 import { ILogger } from '../logger/logger.interface';
 import { TYPES } from '../../types';
 import 'reflect-metadata';
+import { StatusCodes } from 'http-status-codes';
 
 @injectable()
 export class ExceptionFilter implements IExceptionFilter {
@@ -16,7 +17,7 @@ export class ExceptionFilter implements IExceptionFilter {
 			res.status(err.statusCode).send({ err: err.message });
 		} else {
 			this.logger.error(`${err.message}`);
-			res.status(500).send({ err: err.message });
+			res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ err: err.message });
 		}
 	}
 }

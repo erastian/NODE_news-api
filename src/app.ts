@@ -4,9 +4,10 @@ import { IExceptionFilter } from './services/errors/exception.filter.interface';
 import { ILogger } from './services/logger/logger.interface';
 import { inject, injectable } from 'inversify';
 import { TYPES } from './types';
+import { StatusCodes } from 'http-status-codes';
 import 'reflect-metadata';
-import { IConfigService } from './config/config.service.interface';
 import { DatabaseService } from './database/prisma.service';
+import { IConfigService } from './config/config.service.interface';
 import { AuthMiddleware } from './common/auth.middleware';
 
 import { IAuthController } from './auth/auth.controller.interface';
@@ -49,6 +50,9 @@ export class App {
 
 	useExceptionFilters(): void {
 		this.app.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
+		this.app.use('*', (req, res) =>
+			res.status(StatusCodes.NOT_FOUND).json({ message: 'Resource not found' }),
+		);
 	}
 
 	public async init(): Promise<void> {
@@ -63,6 +67,8 @@ export class App {
 	public async close() {
 		await this.databaseService.disconnect();
 		await this.server.close();
-		this.logger.warn('\n\n\nSIGTERM signal detected. DB service shutdown. HTTP server shutdown.\n\n\n');
+		this.logger.warn(
+			'\n\n\nSIGTERM signal detected. DB service shutdown. HTTP server shutdown.\n\n\n',
+		);
 	}
 }

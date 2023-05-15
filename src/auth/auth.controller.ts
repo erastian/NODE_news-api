@@ -10,6 +10,7 @@ import { IAuthController } from './auth.controller.interface';
 import { IAuthService } from './auth.service.interface';
 import { UserRegisterDto } from './dto/user-register.dto';
 import { UserLoginDto } from './dto/user-login.dto';
+import UserDTO from '../users/dto/user.dto';
 
 @injectable()
 export class AuthController extends BaseController implements IAuthController {
@@ -68,15 +69,12 @@ export class AuthController extends BaseController implements IAuthController {
 			const { email, password } = req.body;
 			const user = await this.authService.userIsValidated(email, password);
 
-			const accessToken = await this.authService.getAuthToken(user);
-			const refreshToken = await this.authService.getRefreshToken(user);
+			const { token: accessToken } = this.authService.getAuthToken(user);
+			const { cookie: refreshToken } = this.authService.getRefreshToken(user);
 
-			res.cookie('refreshToken', refreshToken, {
-				maxAge: +this.configService.get('JWT_ACCESS_SECRET_EXPIRATION'),
-				httpOnly: true,
-			});
+			res.setHeader('Set-Cookie', [refreshToken]);
 
-			this.ok(res, { user, accessToken });
+			this.ok(res, { user: new UserDTO(user), accessToken });
 		} catch (e) {
 			return next(e);
 		}
@@ -94,6 +92,14 @@ export class AuthController extends BaseController implements IAuthController {
 	}
 
 	async logoutUser(req: Request, res: Response, next: NextFunction): Promise<void> {
-		await this.ok(res, {});
+		try {
+			// const { refreshToken } = req.cookies;
+			// await this.authService.logOut(refreshToken); // Needs to improved with login func. Needs to stored tokens in DB. Mb create tokenService for that
+			res.clearCookie('refreshToken');
+
+			this.ok(res, 'Good bye!');
+		} catch (e) {
+			return next(e);
+		}
 	}
 }

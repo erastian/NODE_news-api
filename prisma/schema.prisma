@@ -17,6 +17,7 @@ model User {
   password       String
   isActivated    Boolean   @default(false)
   activationLink String
+  role           Role      @default(USER)
   publications   Article[]
   comments       Comment[]
   createdAt      DateTime  @default(now())
@@ -25,11 +26,12 @@ model User {
 }
 
 model Token {
-  id                String @id @default(auto()) @map("_id") @db.ObjectId
-  user              User   @relation(fields: [userID], references: [id])
-  userID            String @db.ObjectId
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  user              User     @relation(fields: [userID], references: [id])
+  userID            String   @db.ObjectId
   deviceFingerprint String
   refreshToken      String
+  expiresIn         DateTime
 }
 
 model Category {
@@ -68,4 +70,10 @@ model Comment {
   authorID    String   @db.ObjectId
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  USER
 }

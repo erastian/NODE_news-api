@@ -5,6 +5,8 @@ import { TYPES } from '../types';
 import { IUsersService } from './users.service.interface';
 import { IUsersRepository } from './users.repository.interface';
 import { CreateUserDto } from './dto/create-user.dto';
+import { ITokenPayload } from '../auth/auth.service';
+import UserDTO from './dto/user.dto';
 
 @injectable()
 export class UsersService implements IUsersService {
@@ -26,8 +28,10 @@ export class UsersService implements IUsersService {
 		return this.usersRepository.findUserByActivationLink(activationLink);
 	}
 
-	getProfile(): Promise<User> {
-		return Object();
+	async getProfile(userPayload: ITokenPayload): Promise<UserDTO> {
+		const user = await this.getUserByEmail(userPayload.email);
+
+		return new UserDTO(user);
 	}
 
 	createUser(data: CreateUserDto): Promise<User> {

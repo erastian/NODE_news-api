@@ -7,6 +7,6 @@ export interface IAuthService {
 	userIsValidated: (email: string, rawPassword: string) => Promise<User>;
 	comparePassword: (rawPassword: string, hashedPassword: string) => Promise<void>;
 	cryptPassword: (rawPassword: string) => Promise<string>;
-	getAuthToken: (user: User) => Promise<{ token: string; cookie: string }>;
-	getRefreshToken: (user: User) => Promise<{ token: string; cookie: string }>;
+	getAuthToken: (user: User) => { token: string; cookie: string };
+	getRefreshToken: (user: User) => { token: string; cookie: string };
 }
