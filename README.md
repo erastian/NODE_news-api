@@ -14,8 +14,10 @@ And, of course, the `TypeScript`)
 ### For installation use command
 ```shell
 $ npm i
-$ npx prisma migrate dev --first init
+$ npx prisma db push
 ```
+*Make sure that the credentials for the MongoDB in the .env file are filled in.<br> 
+Or just use another DB. Details in [Prisma Docs](https://www.prisma.io/docs/getting-started)*
 
 ### For run project
 ```shell
@@ -24,4 +26,4 @@ $ npm run dev
 
 <br><br><br>
 
-#### Thank you for your patience )))
+###### Thank you for your patience )))
