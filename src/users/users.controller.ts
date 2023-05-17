@@ -34,7 +34,6 @@ export class UsersController extends BaseController implements IUsersController 
 	async getProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
 			const user = req.user;
-			console.log(user);
 			const result = await this.usersService.getProfile(user);
 
 			this.ok(res, { user: result });

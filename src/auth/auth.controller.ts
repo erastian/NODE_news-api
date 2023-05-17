@@ -78,7 +78,7 @@ export class AuthController extends BaseController implements IAuthController {
 			const activationLink = req.params.link;
 			await this.authService.activateUser(activationLink);
 
-			return res.redirect(`http://${this.configService.get('CLIENT_URL')}`);
+			// return res.redirect(`http://${this.configService.get('CLIENT_URL')}`);
 		} catch (e) {
 			return next(e);
 		}

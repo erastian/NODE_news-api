@@ -8,11 +8,12 @@ export class AuthMiddleware implements IMiddleware {
 	constructor(private secret: Secret) {}
 
 	execute(req: Request, res: Response, next: NextFunction): void {
-		const token = req.body.token || req.query.token || req.headers['x-access-token'];
+		let token = req.body.token || req.query.token || req.headers.authorization;
 
 		if (!token) return next();
 
 		try {
+			token = token.split(' ')[1];
 			req.user = jwt.verify(token, this.secret) as ITokenPayload;
 			return next();
 		} catch (e) {
