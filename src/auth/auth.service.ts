@@ -33,7 +33,7 @@ export class AuthService implements IAuthService {
 	}
 	async registerUser({ username, email, password }: UserRegisterDto): Promise<User> {
 		const hashedPassword = await this.cryptPassword(password);
-		const activationLink = v4();
+		const activationLink = v4(); // Refactor to token
 
 		const user = await this.usersService.createUser({
 			username,
