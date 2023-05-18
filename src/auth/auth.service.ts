@@ -6,7 +6,6 @@ import bcrypt from 'bcryptjs';
 import { StatusCodes } from 'http-status-codes';
 import { HTTPError } from '../services/errors/http-error.class';
 import jwt, { Secret } from 'jsonwebtoken';
-import { v4 } from 'uuid';
 import { IMailerService } from '../mailer/mailer.service.interface';
 
 import { IAuthService } from './auth.service.interface';
@@ -33,30 +32,35 @@ export class AuthService implements IAuthService {
 	}
 	async registerUser({ username, email, password }: UserRegisterDto): Promise<User> {
 		const hashedPassword = await this.cryptPassword(password);
-		const activationLink = v4(); // Refactor to token
 
 		const user = await this.usersService.createUser({
 			username,
 			email,
 			password: hashedPassword,
-			activationLink,
 		});
+		const { token: activationLink } = this.getActivationToken(user);
 		const activationURL = `http://${this.configService.get(
 			'API_URL',
 		)}/auth/activate/${activationLink}`;
+
 		await this.mailerService.sendActivationMail(email, username, activationURL);
 
 		return user;
 	}
 
-	async activateUser(activationLink: string): Promise<User> {
-		const user = await this.usersService.getUserByActivationLink(activationLink);
-		if (!user) {
+	async activateUser(activationLink: string): Promise<void> {
+		const decryptedUser = jwt.verify(
+			activationLink,
+			this.configService.get('JWT_ACTIVATION_SECRET'),
+		) as ITokenPayload;
+		if (!decryptedUser) {
 			throw new HTTPError(StatusCodes.BAD_REQUEST, 'Wrong activation link');
 		}
+
+		const user = await this.usersService.getUserByID(decryptedUser.id);
+
 		user.isActivated = true;
 		await this.usersService.activateUser(user);
-		return user;
 	}
 
 	async userIsValidated(email: string, rawPassword: string): Promise<User> {
@@ -100,5 +104,17 @@ export class AuthService implements IAuthService {
 		)};`;
 
 		return { token, cookie };
+	}
+	getActivationToken(user: User): { token: string } {
+		const tokenPayload = this.prepareTokenPayload(user);
+		const token = jwt.sign(
+			tokenPayload,
+			this.configService.get('JWT_ACTIVATION_SECRET') as Secret,
+			{
+				expiresIn: this.configService.get('JWT_ACTIVATION_SECRET_EXPIRATION'),
+			},
+		);
+
+		return { token };
 	}
 }

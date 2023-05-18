@@ -7,7 +7,6 @@ export interface IUsersService {
 	getAllUsers: () => Promise<User[]>;
 	getUserByEmail: (email: string) => Promise<User>;
 	getUserByID: (id: string) => Promise<User>;
-	getUserByActivationLink: (activationLink: string) => Promise<User>;
 	getProfile: (userPayload: ITokenPayload) => Promise<UserDTO>;
 	createUser: (data: CreateUserDto) => Promise<User>;
 	activateUser: (user: User) => Promise<User>;

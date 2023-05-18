@@ -27,8 +27,7 @@
     "nodemailer": "^6.9.2",
     "nodemailer-express-handlebars": "^6.1.0",
     "reflect-metadata": "^0.1.13",
-    "tslog": "^4.8.2",
-    "uuid": "^9.0.0"
+    "tslog": "^4.8.2"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",

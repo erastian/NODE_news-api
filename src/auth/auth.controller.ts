@@ -75,10 +75,10 @@ export class AuthController extends BaseController implements IAuthController {
 
 	async activate(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
-			const activationLink = req.params.link;
-			await this.authService.activateUser(activationLink);
+			const activationToken = req.params.link;
+			await this.authService.activateUser(activationToken);
 
-			// return res.redirect(`http://${this.configService.get('CLIENT_URL')}`);
+			this.ok(res, 'User was successfully activated.');
 		} catch (e) {
 			return next(e);
 		}

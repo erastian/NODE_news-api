@@ -24,10 +24,6 @@ export class UsersService implements IUsersService {
 		return this.usersRepository.findUserByID(id);
 	}
 
-	getUserByActivationLink(activationLink: string): Promise<User> {
-		return this.usersRepository.findUserByActivationLink(activationLink);
-	}
-
 	async getProfile(userPayload: ITokenPayload): Promise<UserDTO> {
 		const user = await this.getUserByEmail(userPayload.email);
 

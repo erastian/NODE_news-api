@@ -16,7 +16,6 @@ model User {
   email          String    @unique
   password       String
   isActivated    Boolean   @default(false)
-  activationLink String
   role           Role      @default(USER)
   publications   Article[]
   comments       Comment[]

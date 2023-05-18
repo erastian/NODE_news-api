@@ -22,10 +22,6 @@ export class UsersRepository implements IUsersRepository {
 		return this.databaseService.client.user.findUniqueOrThrow({ where: { id } });
 	}
 
-	async findUserByActivationLink(activationLink: string): Promise<User> {
-		return this.databaseService.client.user.findFirstOrThrow({ where: { activationLink } });
-	}
-
 	async createUser(data: CreateUserDto): Promise<User> {
 		return this.databaseService.client.user.create({ data });
 	}
