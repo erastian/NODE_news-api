@@ -41,7 +41,7 @@ export class AuthService implements IAuthService {
 		const { token: activationLink } = this.getActivationToken(user);
 		const activationURL = `http://${this.configService.get(
 			'API_URL',
-		)}/auth/activate/${activationLink}`;
+		)}/auth/activate?token=${activationLink}`;
 
 		await this.mailerService.sendActivationMail(email, username, activationURL);
 

@@ -43,7 +43,7 @@ export class AuthController extends BaseController implements IAuthController {
 			{ path: '/token', method: 'get', func: this.getToken },
 			{ path: '/forget-password', method: 'post', func: this.forgotPassword, middlewares: [] },
 			{ path: '/restore-password', method: 'post', func: this.restorePassword, middlewares: [] },
-			{ path: '/activate/:link', method: 'get', func: this.activate, middlewares: [] },
+			{ path: '/activate', method: 'get', func: this.activate },
 		]);
 	}
 
@@ -74,9 +74,10 @@ export class AuthController extends BaseController implements IAuthController {
 	}
 
 	async activate(req: Request, res: Response, next: NextFunction): Promise<void> {
+		const { token: activationToken } = req.query;
+
 		try {
-			const activationToken = req.params.link;
-			await this.authService.activateUser(activationToken);
+			await this.authService.activateUser(`${activationToken}`);
 
 			this.ok(res, 'User was successfully activated.');
 		} catch (e) {
