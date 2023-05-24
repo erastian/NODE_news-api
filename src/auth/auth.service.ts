@@ -59,8 +59,7 @@ export class AuthService implements IAuthService {
 
 		const user = await this.usersService.getUserByID(decryptedUser.id);
 
-		user.isActivated = true;
-		await this.usersService.activateUser(user);
+		await this.usersService.activateUser(user.id);
 	}
 
 	async userIsValidated(email: string, rawPassword: string): Promise<User> {

@@ -40,16 +40,16 @@ export class MailerService implements IMailerService {
 	}
 
 	async sendActivationMail(emailFor: string, username: string, link: string): Promise<void> {
-		const _username = username.charAt(0).toUpperCase() + username.slice(1);
-		const _serverName = this.configService.get('SERVER_NAME');
+		const capitalizeUsername = username.charAt(0).toUpperCase() + username.slice(1);
+		const serverName = this.configService.get('SERVER_NAME');
 		const options: ExtendedOptions = {
 			from: `Happy Admin <${this.configService.get('SMTP_USER')}>`,
-			to: `${username} <${emailFor}>`,
+			to: `${capitalizeUsername} <${emailFor}>`,
 			subject: '[Account activation] Service waiting when you activate your account',
 			template: 'email_user_activation',
 			context: {
-				username: _username,
-				server_name: _serverName,
+				username: capitalizeUsername,
+				server_name: serverName,
 				link: link,
 			},
 		};

@@ -34,7 +34,7 @@ export class UsersService implements IUsersService {
 		return this.usersRepository.createUser(data);
 	}
 
-	activateUser(user: User): Promise<User> {
-		return this.usersRepository.activateUser(user.id);
+	activateUser(id: string): Promise<User> {
+		return this.usersRepository.activateUser(id);
 	}
 }

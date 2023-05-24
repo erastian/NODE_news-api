@@ -58,10 +58,10 @@ export class ArticlesController extends BaseController implements IArticlesContr
 		}
 	}
 
-	async createArticle({ body }: Request, res: Response, next: NextFunction): Promise<void> {
+	async createArticle(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
-			const authorID = '1a1'; // Temp author ID. Will replace later
-			const result = await this.articleService.createArticle(body, authorID);
+			const author = req.user;
+			const result = await this.articleService.createArticle(req.body, author.id);
 			this.send(res, StatusCodes.CREATED, result);
 		} catch (e) {
 			next(e);

@@ -122,8 +122,6 @@ export class AuthController extends BaseController implements IAuthController {
 
 	async logoutUser(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
-			// const { refreshToken } = req.cookies;
-			// await this.authService.logOut(refreshToken); // Needs to improved with login func. Needs to stored tokens in DB. Mb create tokenService for that
 			res.clearCookie('refreshToken');
 
 			this.ok(res, 'Good bye!');

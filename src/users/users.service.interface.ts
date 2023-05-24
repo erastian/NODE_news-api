@@ -9,5 +9,5 @@ export interface IUsersService {
 	getUserByID: (id: string) => Promise<User>;
 	getProfile: (userPayload: ITokenPayload) => Promise<UserDTO>;
 	createUser: (data: CreateUserDto) => Promise<User>;
-	activateUser: (user: User) => Promise<User>;
+	activateUser: (id: string) => Promise<User>;
 }
