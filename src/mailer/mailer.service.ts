@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
 import { IConfigService } from '../config/config.service.interface';
 import { TYPES } from '../types';
-import { CONSTANTS } from '../constants/constants';
+import { SERVER_NAME } from '../constants/constants';
 import NodeMailer from 'nodemailer';
 import hbs, { TemplateOptions } from 'nodemailer-express-handlebars';
 import { HTTPError } from '../services/errors/http-error.class';
@@ -42,7 +42,6 @@ export class MailerService implements IMailerService {
 
 	async sendActivationMail(emailFor: string, username: string, link: string): Promise<void> {
 		const capitalizeUsername = username.charAt(0).toUpperCase() + username.slice(1);
-		const serverName = CONSTANTS.SERVER_NAME;
 		const options: ExtendedOptions = {
 			from: `Happy Admin <${this.configService.get('SMTP_USER')}>`,
 			to: `${capitalizeUsername} <${emailFor}>`,
@@ -50,7 +49,7 @@ export class MailerService implements IMailerService {
 			template: 'email_user_activation',
 			context: {
 				username: capitalizeUsername,
-				server_name: serverName,
+				server_name: SERVER_NAME,
 				link: link,
 			},
 		};

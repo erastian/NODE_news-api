@@ -3,7 +3,7 @@ import { UserRegisterDto } from './dto/user-register.dto';
 
 export interface IAuthService {
 	registerUser: (data: UserRegisterDto) => Promise<User>;
-	activateUser: (user: User) => Promise<void>;
+	activateUser: (id: string) => Promise<void>;
 	userIsValidated: (email: string, rawPassword: string) => Promise<User>;
 	comparePassword: (rawPassword: string, hashedPassword: string) => Promise<void>;
 	cryptPassword: (rawPassword: string) => Promise<string>;

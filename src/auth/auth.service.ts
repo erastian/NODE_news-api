@@ -48,12 +48,12 @@ export class AuthService implements IAuthService {
 		return user;
 	}
 
-	async activateUser(decodedUser: User): Promise<void> {
-		if (!decodedUser) {
+	async activateUser(id: string): Promise<void> {
+		if (!id) {
 			throw new HTTPError(StatusCodes.BAD_REQUEST, 'Wrong activation link');
 		}
 
-		const user = await this.usersService.getUserByID(decodedUser.id);
+		const user = await this.usersService.getUserByID(id);
 
 		await this.usersService.activateUser(user.id);
 	}
