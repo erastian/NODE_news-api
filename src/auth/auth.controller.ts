@@ -57,7 +57,7 @@ export class AuthController extends BaseController implements IAuthController {
 
 			const userFromToken = jwt.verify(
 				refreshTokenFromRequest,
-				this.configService.get('JWT_REFRESH_SECRET'),
+				this.configService.get('JWT_SECRET'),
 			) as ITokenPayload;
 
 			const user = await this.userService.getUserByEmail(userFromToken.email);
@@ -74,10 +74,11 @@ export class AuthController extends BaseController implements IAuthController {
 	}
 
 	async activate(req: Request, res: Response, next: NextFunction): Promise<void> {
-		const { token: activationToken } = req.query;
+		const user = req.user;
+		console.log(user);
 
 		try {
-			await this.authService.activateUser(`${activationToken}`);
+			//await this.authService.activateUser(user);
 
 			this.ok(res, 'User was successfully activated.');
 		} catch (e) {

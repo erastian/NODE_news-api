@@ -4,6 +4,7 @@ import { IExceptionFilter } from './services/errors/exception.filter.interface';
 import { ILogger } from './services/logger/logger.interface';
 import { inject, injectable } from 'inversify';
 import { TYPES } from './types';
+import { CONSTANTS } from './constants/constants';
 import { StatusCodes } from 'http-status-codes';
 import 'reflect-metadata';
 import { DatabaseService } from './database/prisma.service';
@@ -32,12 +33,12 @@ export class App {
 		@inject(TYPES.IUsersController) private usersController: IUsersController,
 	) {
 		this.app = express();
-		this.port = 8000;
+		this.port = CONSTANTS.PORT;
 	}
 
 	useMiddleware(): void {
 		this.app.use(express.json());
-		const authMiddleware = new AuthMiddleware(this.configService.get('JWT_ACCESS_SECRET'));
+		const authMiddleware = new AuthMiddleware(this.configService.get('JWT_SECRET'));
 		this.app.use(authMiddleware.execute.bind(authMiddleware));
 	}
 

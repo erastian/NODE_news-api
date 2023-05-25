@@ -40,7 +40,7 @@ export class AuthService implements IAuthService {
 		});
 		const { token: activationLink } = this.getActivationToken(user);
 		const activationURL = `http://${this.configService.get(
-			'API_URL',
+			'CLIENT_URL',
 		)}/auth/activate?token=${activationLink}`;
 
 		await this.mailerService.sendActivationMail(email, username, activationURL);
@@ -48,16 +48,12 @@ export class AuthService implements IAuthService {
 		return user;
 	}
 
-	async activateUser(activationLink: string): Promise<void> {
-		const decryptedUser = jwt.verify(
-			activationLink,
-			this.configService.get('JWT_ACTIVATION_SECRET'),
-		) as ITokenPayload;
-		if (!decryptedUser) {
+	async activateUser(decodedUser: User): Promise<void> {
+		if (!decodedUser) {
 			throw new HTTPError(StatusCodes.BAD_REQUEST, 'Wrong activation link');
 		}
 
-		const user = await this.usersService.getUserByID(decryptedUser.id);
+		const user = await this.usersService.getUserByID(decodedUser.id);
 
 		await this.usersService.activateUser(user.id);
 	}
@@ -83,7 +79,7 @@ export class AuthService implements IAuthService {
 
 	getAuthToken(user: User): { token: string; cookie: string } {
 		const tokenPayload = this.prepareTokenPayload(user);
-		const token = jwt.sign(tokenPayload, this.configService.get('JWT_ACCESS_SECRET') as Secret, {
+		const token = jwt.sign(tokenPayload, this.configService.get('JWT_SECRET') as Secret, {
 			expiresIn: this.configService.get('JWT_ACCESS_SECRET_EXPIRATION'),
 		});
 		const cookie = `accessToken=${token}; HttpOnly; Max-Age=${this.configService.get(
@@ -95,7 +91,7 @@ export class AuthService implements IAuthService {
 
 	getRefreshToken(user: User): { token: string; cookie: string } {
 		const tokenPayload = this.prepareTokenPayload(user);
-		const token = jwt.sign(tokenPayload, this.configService.get('JWT_REFRESH_SECRET'), {
+		const token = jwt.sign(tokenPayload, this.configService.get('JWT_SECRET'), {
 			expiresIn: this.configService.get('JWT_REFRESH_SECRET_EXPIRATION'),
 		});
 		const cookie = `refreshToken=${token}; HttpOnly; Max-Age=${this.configService.get(
@@ -106,13 +102,9 @@ export class AuthService implements IAuthService {
 	}
 	getActivationToken(user: User): { token: string } {
 		const tokenPayload = this.prepareTokenPayload(user);
-		const token = jwt.sign(
-			tokenPayload,
-			this.configService.get('JWT_ACTIVATION_SECRET') as Secret,
-			{
-				expiresIn: this.configService.get('JWT_ACTIVATION_SECRET_EXPIRATION'),
-			},
-		);
+		const token = jwt.sign(tokenPayload, this.configService.get('JWT_SECRET') as Secret, {
+			expiresIn: this.configService.get('JWT_ACTIVATION_SECRET_EXPIRATION'),
+		});
 
 		return { token };
 	}
