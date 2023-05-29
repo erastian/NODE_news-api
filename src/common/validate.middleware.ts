@@ -1,17 +1,20 @@
-import { IMiddleware } from './middleware.interface';
 import { NextFunction, Request, Response } from 'express';
 import { ClassConstructor, plainToInstance } from 'class-transformer';
-import { validate } from 'class-validator';
+import { validate, ValidationError } from 'class-validator';
+import { StatusCodes } from 'http-status-codes';
+
+import { IMiddleware } from './middleware.interface';
 
 export class ValidateMiddleware implements IMiddleware {
 	constructor(private classToValidate: ClassConstructor<object>) {}
+
 	execute({ body }: Request, res: Response, next: NextFunction): void {
 		const instance = plainToInstance(this.classToValidate, body);
-		validate(instance).then((error) => {
+		validate(instance).then((error: ValidationError[]) => {
 			if (error.length > 0) {
-				res.status(422).send(error);
+				res.status(StatusCodes.UNPROCESSABLE_ENTITY).send(error);
 			} else {
-				next();
+				return next();
 			}
 		});
 	}

@@ -15,26 +15,26 @@ export class ArticlesRepository implements IArticlesRepository {
 		return this.databaseService.client.article.findMany();
 	}
 
-	async findArticleByID(id: number): Promise<Article> {
+	async findArticleByID(id: string): Promise<Article> {
 		return this.databaseService.client.article.findUniqueOrThrow({
 			where: { id },
 		});
 	}
 
-	async createArticle(data: ArticleCreateDto, authorID: number): Promise<Article> {
+	async createArticle(data: ArticleCreateDto, authorID: string): Promise<Article> {
 		return this.databaseService.client.article.create({
 			data: { ...data, authorID },
 		});
 	}
 
-	async updateArticle(id: number, data: ArticleUpdateDto): Promise<Article> {
+	async updateArticle(id: string, data: ArticleUpdateDto): Promise<Article> {
 		return this.databaseService.client.article.update({
 			where: { id },
 			data,
 		});
 	}
 
-	async deleteArticle(id: number): Promise<Article> {
+	async deleteArticle(id: string): Promise<Article> {
 		return this.databaseService.client.article.delete({
 			where: { id },
 		});

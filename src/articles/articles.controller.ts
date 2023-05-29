@@ -49,7 +49,7 @@ export class ArticlesController extends BaseController implements IArticlesContr
 
 	async getArticleByID({ params }: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
-			const id = +params.id;
+			const id = params.id;
 			const result = await this.articleService.getArticleByID(id);
 
 			this.ok(res, result);
@@ -58,10 +58,10 @@ export class ArticlesController extends BaseController implements IArticlesContr
 		}
 	}
 
-	async createArticle({ body }: Request, res: Response, next: NextFunction): Promise<void> {
+	async createArticle(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
-			const authorID = 1; // Temp author ID. Will replace later
-			const result = await this.articleService.createArticle(body, authorID);
+			const author = req.user;
+			const result = await this.articleService.createArticle(req.body, author.id);
 			this.send(res, StatusCodes.CREATED, result);
 		} catch (e) {
 			next(e);
@@ -70,7 +70,7 @@ export class ArticlesController extends BaseController implements IArticlesContr
 
 	async updateArticle({ params, body }: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
-			const id = +params.id;
+			const id = params.id;
 			const result = await this.articleService.updateArticle(id, body);
 			this.ok(res, result);
 		} catch (e) {
@@ -80,7 +80,7 @@ export class ArticlesController extends BaseController implements IArticlesContr
 
 	async deleteArticle({ params }: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
-			const id = +params.id;
+			const id = params.id;
 			await this.articleService.deleteArticle(id);
 			this.ok(res, id);
 		} catch (e) {

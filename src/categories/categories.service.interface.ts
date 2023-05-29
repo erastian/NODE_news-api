@@ -6,5 +6,5 @@ export interface ICategoriesService {
 	getAllCategories: () => Promise<Category[]>;
 	getCategoryByURL: (url: string) => Promise<Category>;
 	createCategory: (data: CategoryCreateDto) => Promise<Category>;
-	updateCategory: (id: number, data: CategoryUpdateDto) => Promise<Category>;
+	updateCategory: (id: string, data: CategoryUpdateDto) => Promise<Category>;
 }

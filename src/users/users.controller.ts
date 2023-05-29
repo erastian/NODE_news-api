@@ -4,12 +4,9 @@ import { inject, injectable } from 'inversify';
 import { TYPES } from '../types';
 import { ILogger } from '../services/logger/logger.interface';
 import 'reflect-metadata';
-import { ValidateMiddleware } from '../common/validate.middleware';
 
 import { IUsersController } from './users.controller.interface';
 import { IUsersService } from './users.service.interface';
-import { UserRegisterDto } from './dto/user-register.dto';
-import { UserLoginDto } from './dto/user-login.dto';
 
 @injectable()
 export class UsersController extends BaseController implements IUsersController {
@@ -20,8 +17,7 @@ export class UsersController extends BaseController implements IUsersController 
 		super(loggerService);
 		this.bindRoutes([
 			{ path: '/', method: 'get', func: this.getAllUsers },
-			{ path: '/register', method: 'post', func: this.registerUser, middlewares: [new ValidateMiddleware(UserRegisterDto)] },
-			{ path: '/login', method: 'post', func: this.loginUser, middlewares: [new ValidateMiddleware(UserLoginDto)] },
+			{ path: '/profile', method: 'get', func: this.getProfile, middlewares: [] },
 		]);
 	}
 
@@ -35,23 +31,12 @@ export class UsersController extends BaseController implements IUsersController 
 		}
 	}
 
-	async registerUser({ body }: Request, res: Response, next: NextFunction): Promise<void> {
+	async getProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
-			const { email, username, password } = body;
-			await this.usersService.registerUser({ email, username, password });
+			const user = req.user;
+			const result = await this.usersService.getProfile(user);
 
-			this.ok(res, 'User registered.');
-		} catch (e) {
-			return next(e);
-		}
-	}
-
-	async loginUser(req: Request, res: Response, next: NextFunction): Promise<void> {
-		try {
-			const { email, password } = req.body;
-			const user = await this.usersService.validateUser(email, password);
-
-			this.ok(res, { user });
+			this.ok(res, { user: result });
 		} catch (e) {
 			return next(e);
 		}

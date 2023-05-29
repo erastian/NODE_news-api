@@ -26,7 +26,7 @@ export class CategoriesRepository implements ICategoriesRepository {
 		return this.databaseService.client.category.create({ data });
 	}
 
-	async updateCategory(id: number, data: CategoryUpdateDto): Promise<Category> {
+	async updateCategory(id: string, data: CategoryUpdateDto): Promise<Category> {
 		return this.databaseService.client.category.update({
 			where: { id },
 			data,
