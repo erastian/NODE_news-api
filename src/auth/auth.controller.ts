@@ -57,7 +57,7 @@ export class AuthController extends BaseController implements IAuthController {
 
 			const userFromToken = jwt.verify(
 				refreshTokenFromRequest,
-				this.configService.get('JWT_SECRET'),
+				this.configService.get('JWT_REFRESH_SECRET'),
 			) as ITokenPayload;
 
 			const user = await this.userService.getUserByEmail(userFromToken.email);

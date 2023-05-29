@@ -7,6 +7,7 @@ import { StatusCodes } from 'http-status-codes';
 import { HTTPError } from '../services/errors/http-error.class';
 import jwt, { Secret } from 'jsonwebtoken';
 import { IMailerService } from '../mailer/mailer.service.interface';
+import { ObjectId } from 'bson';
 
 import { IAuthService } from './auth.service.interface';
 import { UserRegisterDto } from './dto/user-register.dto';
@@ -49,8 +50,8 @@ export class AuthService implements IAuthService {
 	}
 
 	async activateUser(id: string): Promise<void> {
-		if (!id) {
-			throw new HTTPError(StatusCodes.BAD_REQUEST, 'Wrong activation link');
+		if (!ObjectId.isValid(id)) {
+			throw new HTTPError(StatusCodes.BAD_REQUEST, 'Wrong activation ID');
 		}
 
 		const user = await this.usersService.getUserByID(id);
@@ -91,7 +92,7 @@ export class AuthService implements IAuthService {
 
 	getRefreshToken(user: User): { token: string; cookie: string } {
 		const tokenPayload = this.prepareTokenPayload(user);
-		const token = jwt.sign(tokenPayload, this.configService.get('JWT_SECRET'), {
+		const token = jwt.sign(tokenPayload, this.configService.get('JWT_REFRESH_SECRET'), {
 			expiresIn: this.configService.get('JWT_REFRESH_SECRET_EXPIRATION'),
 		});
 		const cookie = `refreshToken=${token}; HttpOnly; Max-Age=${this.configService.get(
