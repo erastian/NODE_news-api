@@ -8,7 +8,7 @@ export class AuthMiddleware implements IMiddleware {
 	constructor(private secret: Secret) {}
 
 	execute(req: Request, res: Response, next: NextFunction): void {
-		let token = req.body.token || req.headers.authorization || req.body.activationToken;
+		let token = req.body.token || req.headers.authorization;
 
 		if (!token) {
 			return next();

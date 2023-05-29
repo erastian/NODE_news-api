@@ -43,7 +43,7 @@ export class AuthController extends BaseController implements IAuthController {
 			{ path: '/token', method: 'get', func: this.getToken },
 			{ path: '/forget-password', method: 'post', func: this.forgotPassword, middlewares: [] },
 			{ path: '/restore-password', method: 'post', func: this.restorePassword, middlewares: [] },
-			{ path: '/activate', method: 'get', func: this.activate },
+			{ path: '/activate', method: 'post', func: this.activate },
 		]);
 	}
 
