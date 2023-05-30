@@ -10,4 +10,5 @@ export interface IUsersService {
 	getProfile: (userPayload: ITokenPayload) => Promise<UserDTO>;
 	createUser: (data: CreateUserDto) => Promise<User>;
 	activateUser: (id: string) => Promise<User>;
+	updatePassword: (id: string, hashedPassword: string) => Promise<User>;
 }

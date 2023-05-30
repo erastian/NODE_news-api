@@ -37,4 +37,8 @@ export class UsersService implements IUsersService {
 	activateUser(id: string): Promise<User> {
 		return this.usersRepository.activateUser(id);
 	}
+
+	updatePassword(id: string, password: string): Promise<User> {
+		return this.usersRepository.updatePassword(id, password);
+	}
 }

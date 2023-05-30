@@ -60,4 +60,28 @@ export class MailerService implements IMailerService {
 			throw new HTTPError(StatusCodes.BAD_REQUEST, `Email to ${emailFor} was not sent.`);
 		}
 	}
+
+	async sendRestorePasswordLink(emailFor: string, username: string, link: string): Promise<void> {
+		const capitalizeUsername = username.charAt(0).toUpperCase() + username.slice(1);
+		const options: ExtendedOptions = {
+			from: `Happy Admin <${this.configService.get('SMTP_USER')}>`,
+			to: `${capitalizeUsername} <${emailFor}>`,
+			subject: '[Restore password] Password restoration message',
+			template: 'restore_password',
+			context: {
+				username: capitalizeUsername,
+				server_name: SERVER_NAME,
+				link: link,
+			},
+		};
+
+		try {
+			await this.transporter.sendMail(options);
+		} catch (e) {
+			throw new HTTPError(
+				StatusCodes.BAD_REQUEST,
+				`Email with restore password link for ${emailFor} was not sent.`,
+			);
+		}
+	}
 }
