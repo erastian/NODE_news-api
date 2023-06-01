@@ -59,12 +59,12 @@ export class AuthService implements IAuthService {
 		await this.usersService.activateUser(user.id);
 	}
 
-	async restorePassword(user: ITokenPayload, newPassword: string): Promise<void> {
-		if (!ObjectId.isValid(user.id)) {
+	async restorePassword(id: string, newPassword: string): Promise<void> {
+		if (!ObjectId.isValid(id)) {
 			throw new HTTPError(StatusCodes.UNAUTHORIZED, 'Wrong restoration ID');
 		}
 
-		const existedUser = await this.usersService.getUserByEmail(user.email);
+		const existedUser = await this.usersService.getUserByID(id);
 		const hashedPassword = await this.cryptPassword(newPassword);
 
 		await this.usersService.updatePassword(existedUser.id, hashedPassword);

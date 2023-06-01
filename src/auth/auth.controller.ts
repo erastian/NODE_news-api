@@ -103,7 +103,7 @@ export class AuthController extends BaseController implements IAuthController {
 		const { newPassword } = req.body;
 
 		try {
-			await this.authService.restorePassword(user, newPassword);
+			await this.authService.restorePassword(user.id, newPassword);
 
 			this.ok(res, 'Password was successfully changed');
 		} catch (e) {

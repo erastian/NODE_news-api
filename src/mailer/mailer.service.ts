@@ -41,20 +41,20 @@ export class MailerService implements IMailerService {
 	}
 
 	async sendActivationMail(emailFor: string, username: string, link: string): Promise<void> {
-		const capitalizeUsername = username.charAt(0).toUpperCase() + username.slice(1);
-		const options: ExtendedOptions = {
-			from: `Happy Admin <${this.configService.get('SMTP_USER')}>`,
-			to: `${capitalizeUsername} <${emailFor}>`,
-			subject: '[Account activation] Service waiting when you activate your account',
-			template: 'email_user_activation',
-			context: {
-				username: capitalizeUsername,
-				server_name: SERVER_NAME,
-				link: link,
-			},
-		};
-
 		try {
+			const capitalizeUsername = username.charAt(0).toUpperCase() + username.slice(1);
+			const options: ExtendedOptions = {
+				from: `Happy Admin <${this.configService.get('SMTP_USER')}>`,
+				to: `${capitalizeUsername} <${emailFor}>`,
+				subject: '[Account activation] Service waiting when you activate your account',
+				template: 'email_user_activation',
+				context: {
+					username: capitalizeUsername,
+					server_name: SERVER_NAME,
+					link: link,
+				},
+			};
+
 			await this.transporter.sendMail(options);
 		} catch (e) {
 			throw new HTTPError(StatusCodes.BAD_REQUEST, `Email to ${emailFor} was not sent.`);
@@ -62,20 +62,20 @@ export class MailerService implements IMailerService {
 	}
 
 	async sendRestorePasswordLink(emailFor: string, username: string, link: string): Promise<void> {
-		const capitalizeUsername = username.charAt(0).toUpperCase() + username.slice(1);
-		const options: ExtendedOptions = {
-			from: `Happy Admin <${this.configService.get('SMTP_USER')}>`,
-			to: `${capitalizeUsername} <${emailFor}>`,
-			subject: '[Restore password] Password restoration message',
-			template: 'restore_password',
-			context: {
-				username: capitalizeUsername,
-				server_name: SERVER_NAME,
-				link: link,
-			},
-		};
-
 		try {
+			const capitalizeUsername = username.charAt(0).toUpperCase() + username.slice(1);
+			const options: ExtendedOptions = {
+				from: `Happy Admin <${this.configService.get('SMTP_USER')}>`,
+				to: `${capitalizeUsername} <${emailFor}>`,
+				subject: '[Restore password] Password restoration message',
+				template: 'restore_password',
+				context: {
+					username: capitalizeUsername,
+					server_name: SERVER_NAME,
+					link: link,
+				},
+			};
+
 			await this.transporter.sendMail(options);
 		} catch (e) {
 			throw new HTTPError(
