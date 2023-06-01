@@ -14,6 +14,7 @@ import { AuthMiddleware } from './common/auth.middleware';
 import { IAuthController } from './auth/auth.controller.interface';
 import { IArticlesController } from './articles/articles.controller.interface';
 import { ICategoriesController } from './categories/categories.controller.interface';
+import { ICommentsController } from './comments/comments.controller.interface';
 import { IUsersController } from './users/users.controller.interface';
 
 @injectable()
@@ -30,6 +31,7 @@ export class App {
 		@inject(TYPES.IAuthController) private authController: IAuthController,
 		@inject(TYPES.IArticlesController) private articlesController: IArticlesController,
 		@inject(TYPES.ICategoriesController) private categoriesController: ICategoriesController,
+		@inject(TYPES.ICommentsController) private commentsController: ICommentsController,
 		@inject(TYPES.IUsersController) private usersController: IUsersController,
 	) {
 		this.app = express();
@@ -47,6 +49,7 @@ export class App {
 		this.app.use('/articles', this.articlesController.router);
 		this.app.use('/category', this.categoriesController.router);
 		this.app.use('/users', this.usersController.router);
+		this.app.use('/comments', this.commentsController.router);
 	}
 
 	useExceptionFilters(): void {

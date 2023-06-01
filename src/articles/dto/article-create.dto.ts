@@ -1,5 +1,5 @@
 import { Article } from '@prisma/client';
-import { IsString, IsOptional, IsDefined, IsNumber, IsEmpty } from 'class-validator';
+import { IsString, IsOptional, IsDefined, IsEmpty } from 'class-validator';
 
 export class ArticleCreateDto implements Omit<Article, 'authorID' | 'id'> {
 	@IsDefined()
@@ -26,10 +26,10 @@ export class ArticleCreateDto implements Omit<Article, 'authorID' | 'id'> {
 	articleBody: string;
 
 	@IsEmpty()
-	authorID: number;
+	authorID: string;
 
 	@IsDefined()
-	@IsNumber()
+	@IsString()
 	categoryID: string;
 
 	@IsEmpty()
