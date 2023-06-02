@@ -1,5 +1,5 @@
 import { Article } from '@prisma/client';
-import { IsString, IsOptional, IsDefined, IsEmpty } from 'class-validator';
+import { IsString, IsOptional, IsDefined, IsEmpty, IsMongoId } from 'class-validator';
 
 export class ArticleCreateDto implements Omit<Article, 'authorID' | 'id'> {
 	@IsDefined()
@@ -29,7 +29,7 @@ export class ArticleCreateDto implements Omit<Article, 'authorID' | 'id'> {
 	authorID: string;
 
 	@IsDefined()
-	@IsString()
+	@IsMongoId()
 	categoryID: string;
 
 	@IsEmpty()

@@ -1,5 +1,5 @@
 import { Comment } from '@prisma/client';
-import { IsString, IsDefined, IsEmpty } from 'class-validator';
+import { IsString, IsDefined, IsEmpty, IsMongoId } from 'class-validator';
 
 export class CommentCreateDto implements Omit<Comment, 'authorID' | 'id'> {
 	@IsDefined()
@@ -7,7 +7,7 @@ export class CommentCreateDto implements Omit<Comment, 'authorID' | 'id'> {
 	commentBody: string;
 
 	@IsDefined()
-	@IsString()
+	@IsMongoId()
 	articleID: string;
 
 	@IsEmpty()
