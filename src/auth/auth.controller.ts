@@ -74,9 +74,9 @@ export class AuthController extends BaseController implements IAuthController {
 	}
 
 	async activate(req: Request, res: Response, next: NextFunction): Promise<void> {
-		const user = req.user;
-
 		try {
+			const user = req.user;
+
 			await this.authService.activateUser(user.id);
 
 			this.ok(res, 'User was successfully activated.');
@@ -99,10 +99,10 @@ export class AuthController extends BaseController implements IAuthController {
 	}
 
 	async restorePassword(req: Request, res: Response, next: NextFunction): Promise<void> {
-		const user = req.user;
-		const { newPassword } = req.body;
-
 		try {
+			const user = req.user;
+			const { newPassword } = req.body;
+
 			await this.authService.restorePassword(user.id, newPassword);
 
 			this.ok(res, 'Password was successfully changed');
