@@ -7,4 +7,5 @@ export interface IUsersRepository {
 	findUserByID: (id: string) => Promise<User>;
 	createUser: (data: CreateUserDto) => Promise<User>;
 	activateUser: (id: string) => Promise<User>;
+	updatePassword: (userID: string, password: string) => Promise<User>;
 }

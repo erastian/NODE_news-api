@@ -34,4 +34,11 @@ export class UsersRepository implements IUsersRepository {
 			},
 		});
 	}
+
+	async updatePassword(userID: string, password: string): Promise<User> {
+		return this.databaseService.client.user.update({
+			where: { id: userID },
+			data: { password },
+		});
+	}
 }

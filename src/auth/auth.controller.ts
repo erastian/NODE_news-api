@@ -23,7 +23,7 @@ export class AuthController extends BaseController implements IAuthController {
 		@inject(TYPES.ILogger) private loggerService: ILogger,
 		@inject(TYPES.IConfigService) private configService: IConfigService,
 		@inject(TYPES.IAuthService) private authService: IAuthService,
-		@inject(TYPES.IUsersService) private userService: IUsersService,
+		@inject(TYPES.IUsersService) private usersService: IUsersService,
 	) {
 		super(loggerService);
 		this.bindRoutes([
@@ -41,7 +41,7 @@ export class AuthController extends BaseController implements IAuthController {
 			},
 			{ path: '/logout', method: 'get', func: this.logoutUser },
 			{ path: '/token', method: 'get', func: this.getToken },
-			{ path: '/forget-password', method: 'post', func: this.forgotPassword, middlewares: [] },
+			{ path: '/forgot-password', method: 'post', func: this.forgotPassword, middlewares: [] },
 			{ path: '/restore-password', method: 'post', func: this.restorePassword, middlewares: [] },
 			{ path: '/activate', method: 'post', func: this.activate },
 		]);
@@ -60,7 +60,7 @@ export class AuthController extends BaseController implements IAuthController {
 				this.configService.get('JWT_REFRESH_SECRET'),
 			) as ITokenPayload;
 
-			const user = await this.userService.getUserByEmail(userFromToken.email);
+			const user = await this.usersService.getUserByEmail(userFromToken.email);
 
 			const { token: accessToken } = this.authService.getAuthToken(user);
 			const { cookie: refreshToken } = this.authService.getRefreshToken(user);
@@ -74,9 +74,9 @@ export class AuthController extends BaseController implements IAuthController {
 	}
 
 	async activate(req: Request, res: Response, next: NextFunction): Promise<void> {
-		const user = req.user;
-
 		try {
+			const user = req.user;
+
 			await this.authService.activateUser(user.id);
 
 			this.ok(res, 'User was successfully activated.');
@@ -86,16 +86,34 @@ export class AuthController extends BaseController implements IAuthController {
 	}
 
 	async forgotPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
-		this.ok(res, {});
+		try {
+			const { email } = req.body;
+			const user = await this.usersService.getUserByEmail(email);
+
+			await this.authService.sendPasswordRestorationEmail(user);
+
+			this.ok(res, `Restoration email for ${email} was sent.`);
+		} catch (e) {
+			return next(e);
+		}
 	}
 
 	async restorePassword(req: Request, res: Response, next: NextFunction): Promise<void> {
-		this.ok(res, {});
+		try {
+			const user = req.user;
+			const { newPassword } = req.body;
+
+			await this.authService.restorePassword(user.id, newPassword);
+
+			this.ok(res, 'Password was successfully changed');
+		} catch (e) {
+			return next(e);
+		}
 	}
 
 	async loginUser(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
-			const { email, password } = req.body;
+			const { email, password } = req.body; //TODO: Add logic when user is not activated
 			const user = await this.authService.userIsValidated(email, password);
 
 			const { token: accessToken } = this.authService.getAuthToken(user);

@@ -40,7 +40,7 @@ export class AuthService implements IAuthService {
 			password: hashedPassword,
 		});
 		const { token: activationLink } = this.getActivationToken(user);
-		const activationURL = `http://${this.configService.get(
+		const activationURL = `${this.configService.get(
 			'CLIENT_URL',
 		)}/auth/activate?token=${activationLink}`;
 
@@ -57,6 +57,26 @@ export class AuthService implements IAuthService {
 		const user = await this.usersService.getUserByID(id);
 
 		await this.usersService.activateUser(user.id);
+	}
+
+	async restorePassword(id: string, newPassword: string): Promise<void> {
+		if (!ObjectId.isValid(id)) {
+			throw new HTTPError(StatusCodes.UNAUTHORIZED, 'Wrong restoration ID');
+		}
+
+		const existedUser = await this.usersService.getUserByID(id);
+		const hashedPassword = await this.cryptPassword(newPassword);
+
+		await this.usersService.updatePassword(existedUser.id, hashedPassword);
+	}
+
+	async sendPasswordRestorationEmail(user: User): Promise<void> {
+		const { token: restoreToken } = this.getAuthToken(user);
+		const restorationURL = `${this.configService.get(
+			'CLIENT_URL',
+		)}/restore-password?token=${restoreToken}`;
+
+		await this.mailerService.sendRestorePasswordLink(user.email, user.username, restorationURL);
 	}
 
 	async userIsValidated(email: string, rawPassword: string): Promise<User> {
