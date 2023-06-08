@@ -25,7 +25,11 @@ export class CommentsService implements ICommentsService {
 		return this.commentsRepository.findAllComments();
 	}
 
-	findArticleComments(articleID: string, published: boolean | null): Promise<Comment[]> {
-		return this.commentsRepository.findArticleComments(articleID, published);
+	findPublishedArticleComments(articleID: string): Promise<Comment[]> {
+		return this.commentsRepository.findPublishedArticleComments(articleID);
+	}
+
+	findAllArticleComments(articleID: string): Promise<Comment[]> {
+		return this.commentsRepository.findAllArticleComments(articleID);
 	}
 }

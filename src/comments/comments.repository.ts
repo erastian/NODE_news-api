@@ -50,18 +50,33 @@ export class CommentsRepository implements ICommentsRepository {
 		}); //TODO: Add paginator. Better way get this query from article?
 	}
 
-	async findArticleComments(articleID: string, published: boolean | null): Promise<Comment[]> {
-		let query;
-		if (published === true) {
-			query = { where: { articleID, isPublished: true } };
-		} else if (published === false) {
-			query = { where: { articleID, isPublished: false } };
-		} else if (published === null) {
-			query = { where: { articleID } };
-		}
-
+	async findPublishedArticleComments(articleID: string): Promise<Comment[]> {
 		return this.databaseService.client.comment.findMany({
-			...query,
+			where: { articleID, isPublished: true },
+			include: {
+				article: {
+					select: {
+						id: true,
+						title: true,
+					},
+				},
+				author: {
+					select: {
+						id: true,
+						username: true,
+						email: true,
+					},
+				},
+			},
+			orderBy: {
+				createdAt: 'asc',
+			},
+		});
+	}
+
+	async findAllArticleComments(articleID: string): Promise<Comment[]> {
+		return this.databaseService.client.comment.findMany({
+			where: { articleID },
 			include: {
 				article: {
 					select: {

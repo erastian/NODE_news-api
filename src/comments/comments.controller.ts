@@ -79,7 +79,7 @@ export class CommentsController extends BaseController implements ICommentsContr
 		try {
 			const articleID = req.params.articleID;
 
-			const result = await this.commentsService.findArticleComments(articleID, true);
+			const result = await this.commentsService.findPublishedArticleComments(articleID);
 
 			this.ok(res, result);
 		} catch (e) {
@@ -91,7 +91,7 @@ export class CommentsController extends BaseController implements ICommentsContr
 		try {
 			const articleID = req.params.articleID;
 
-			const result = await this.commentsService.findArticleComments(articleID, null);
+			const result = await this.commentsService.findAllArticleComments(articleID);
 
 			this.ok(res, result);
 		} catch (e) {

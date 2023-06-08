@@ -5,5 +5,6 @@ export interface ICommentsService {
 	publishComment: (id: string) => Promise<Comment>;
 	deleteComment: (id: string) => Promise<Comment>;
 	findAllComments: () => Promise<Comment[]>;
-	findArticleComments: (id: string, published: boolean | null) => Promise<Comment[]>;
+	findPublishedArticleComments: (id: string) => Promise<Comment[]>;
+	findAllArticleComments: (id: string) => Promise<Comment[]>;
 }
