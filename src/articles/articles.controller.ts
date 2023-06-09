@@ -6,11 +6,15 @@ import { ILogger } from '../services/logger/logger.interface';
 import 'reflect-metadata';
 import { ValidateMiddleware } from '../common/validate.middleware';
 import { StatusCodes } from 'http-status-codes';
+import { Role } from '@prisma/client';
 
 import { IArticlesController } from './articles.controller.interface';
 import { IArticlesService } from './articles.service.interface';
 import { ArticleCreateDto } from './dto/article-create.dto';
 import { ArticleUpdateDto } from './dto/article-update.dto';
+import { ArticlePublishDto } from './dto/article-publish.dto';
+
+import { GuardMiddleware } from '../common/guard.middleware';
 
 @injectable()
 export class ArticlesController extends BaseController implements IArticlesController {
@@ -26,15 +30,35 @@ export class ArticlesController extends BaseController implements IArticlesContr
 				path: '/',
 				method: 'post',
 				func: this.createArticle,
-				middlewares: [new ValidateMiddleware(ArticleCreateDto)],
+				middlewares: [
+					new GuardMiddleware([Role.ADMIN, Role.MANAGER]),
+					new ValidateMiddleware(ArticleCreateDto),
+				],
 			},
 			{
 				path: '/:id',
 				method: 'patch',
 				func: this.updateArticle,
-				middlewares: [new ValidateMiddleware(ArticleUpdateDto)],
+				middlewares: [
+					new GuardMiddleware([Role.ADMIN, Role.MANAGER]),
+					new ValidateMiddleware(ArticleUpdateDto),
+				],
 			},
-			{ path: '/:id', method: 'delete', func: this.deleteArticle },
+			{
+				path: '/:id/publish',
+				method: 'post',
+				func: this.publishArticle,
+				middlewares: [
+					new GuardMiddleware([Role.ADMIN, Role.MANAGER]),
+					new ValidateMiddleware(ArticlePublishDto),
+				],
+			},
+			{
+				path: '/:id',
+				method: 'delete',
+				func: this.deleteArticle,
+				middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER])],
+			},
 		]);
 	}
 
@@ -75,6 +99,19 @@ export class ArticlesController extends BaseController implements IArticlesContr
 			this.ok(res, result);
 		} catch (e) {
 			next(e);
+		}
+	}
+
+	async publishArticle(req: Request, res: Response, next: NextFunction): Promise<void> {
+		try {
+			const id = req.params.id;
+			const { isPublished } = req.body;
+
+			const result = await this.articleService.publishArticle(id, isPublished);
+
+			this.ok(res, result);
+		} catch (e) {
+			return next(e);
 		}
 	}
 

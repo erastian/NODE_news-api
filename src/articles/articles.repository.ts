@@ -34,6 +34,10 @@ export class ArticlesRepository implements IArticlesRepository {
 		});
 	}
 
+	async publishArticle(id: string, isPublished: boolean): Promise<Article> {
+		return this.databaseService.client.article.update({ where: { id }, data: { isPublished } });
+	}
+
 	async deleteArticle(id: string): Promise<Article> {
 		return this.databaseService.client.article.delete({
 			where: { id },

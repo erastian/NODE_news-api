@@ -6,11 +6,14 @@ import { ILogger } from '../services/logger/logger.interface';
 import 'reflect-metadata';
 import { ValidateMiddleware } from '../common/validate.middleware';
 import { StatusCodes } from 'http-status-codes';
+import { Role } from '@prisma/client';
 
 import { ICategoriesController } from './categories.controller.interface';
 import { ICategoriesService } from './categories.service.interface';
 import { CategoryCreateDto } from './dto/category-create.dto';
 import { CategoryUpdateDto } from './dto/category-update.dto';
+
+import { GuardMiddleware } from '../common/guard.middleware';
 
 @injectable()
 export class CategoriesController extends BaseController implements ICategoriesController {
@@ -26,13 +29,19 @@ export class CategoriesController extends BaseController implements ICategoriesC
 				path: '/',
 				method: 'post',
 				func: this.createCategory,
-				middlewares: [new ValidateMiddleware(CategoryCreateDto)],
+				middlewares: [
+					new GuardMiddleware([Role.ADMIN, Role.MANAGER]),
+					new ValidateMiddleware(CategoryCreateDto),
+				],
 			},
 			{
 				path: '/:id',
 				method: 'patch',
 				func: this.updateCategory,
-				middlewares: [new ValidateMiddleware(CategoryUpdateDto)],
+				middlewares: [
+					new GuardMiddleware([Role.ADMIN, Role.MANAGER]),
+					new ValidateMiddleware(CategoryUpdateDto),
+				],
 			},
 		]);
 	}

@@ -31,6 +31,10 @@ export class ArticlesService implements IArticlesService {
 		return this.articlesRepository.updateArticle(id, data);
 	}
 
+	publishArticle(id: string, isPublished: boolean): Promise<Article> {
+		return this.articlesRepository.publishArticle(id, isPublished);
+	}
+
 	deleteArticle(id: string): Promise<Article> {
 		return this.articlesRepository.deleteArticle(id);
 	}
