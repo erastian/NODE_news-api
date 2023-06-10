@@ -1,10 +1,14 @@
 import { Article } from '@prisma/client';
-import { IsString, IsOptional, IsDefined, IsNumber, IsEmpty } from 'class-validator';
+import { IsString, IsOptional, IsDefined, IsEmpty } from 'class-validator';
 
 export class ArticleCreateDto implements Omit<Article, 'authorID' | 'id'> {
 	@IsDefined()
 	@IsString()
 	title: string;
+
+	@IsDefined()
+	@IsString()
+	url: string;
 
 	@IsEmpty()
 	isPublished: boolean;
@@ -29,7 +33,7 @@ export class ArticleCreateDto implements Omit<Article, 'authorID' | 'id'> {
 	authorID: number;
 
 	@IsDefined()
-	@IsNumber()
+	@IsString()
 	categoryID: string;
 
 	@IsEmpty()

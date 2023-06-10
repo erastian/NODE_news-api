@@ -14,7 +14,7 @@ export class GuardMiddleware implements IMiddleware {
 		}
 
 		if (this.roles.length && !this.roles.includes(req?.user?.role)) {
-			return next(new HTTPError(StatusCodes.FORBIDDEN, 'Access denied'));
+			return next(new HTTPError(StatusCodes.UNAUTHORIZED, 'Access denied'));
 		}
 
 		return next();

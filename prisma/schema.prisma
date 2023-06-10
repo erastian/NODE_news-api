@@ -46,6 +46,7 @@ model Article {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
   isPublished Boolean   @default(false)
   title       String
+  url         String    @unique
   description String?
   cover       String?
   image       String?

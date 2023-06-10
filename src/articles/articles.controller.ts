@@ -25,39 +25,30 @@ export class ArticlesController extends BaseController implements IArticlesContr
 		super(loggerService);
 		this.bindRoutes([
 			{ path: '/', method: 'get', func: this.getAllArticles },
-			{ path: '/:id', method: 'get', func: this.getArticleByID },
+			{ path: '/:url', method: 'get', func: this.getArticleByURL },
 			{
 				path: '/',
 				method: 'post',
 				func: this.createArticle,
-				middlewares: [
-					new GuardMiddleware([Role.ADMIN, Role.MANAGER]),
-					new ValidateMiddleware(ArticleCreateDto),
-				],
+				middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER]), new ValidateMiddleware(ArticleCreateDto)],
 			},
 			{
 				path: '/:id',
 				method: 'patch',
 				func: this.updateArticle,
-				middlewares: [
-					new GuardMiddleware([Role.ADMIN, Role.MANAGER]),
-					new ValidateMiddleware(ArticleUpdateDto),
-				],
+				middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER]), new ValidateMiddleware(ArticleUpdateDto)],
 			},
 			{
 				path: '/:id/publish',
 				method: 'post',
 				func: this.publishArticle,
-				middlewares: [
-					new GuardMiddleware([Role.ADMIN, Role.MANAGER]),
-					new ValidateMiddleware(ArticlePublishDto),
-				],
+				middlewares: [new GuardMiddleware([Role.ADMIN]), new ValidateMiddleware(ArticlePublishDto)],
 			},
 			{
 				path: '/:id',
 				method: 'delete',
 				func: this.deleteArticle,
-				middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER])],
+				middlewares: [new GuardMiddleware([Role.ADMIN])],
 			},
 		]);
 	}
@@ -71,10 +62,11 @@ export class ArticlesController extends BaseController implements IArticlesContr
 		}
 	}
 
-	async getArticleByID({ params }: Request, res: Response, next: NextFunction): Promise<void> {
+	async getArticleByURL(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
-			const id = params.id;
-			const result = await this.articleService.getArticleByID(id);
+			const articleURL = req.params.url;
+
+			const result = await this.articleService.getArticleByURL(articleURL);
 
 			this.ok(res, result);
 		} catch (e) {
@@ -92,10 +84,13 @@ export class ArticlesController extends BaseController implements IArticlesContr
 		}
 	}
 
-	async updateArticle({ params, body }: Request, res: Response, next: NextFunction): Promise<void> {
+	async updateArticle(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
-			const id = params.id;
-			const result = await this.articleService.updateArticle(id, body);
+			const articleID = req.params.id;
+			const user = req.user;
+
+			const result = await this.articleService.updateArticle(articleID, user, req.body);
+
 			this.ok(res, result);
 		} catch (e) {
 			next(e);
@@ -115,11 +110,13 @@ export class ArticlesController extends BaseController implements IArticlesContr
 		}
 	}
 
-	async deleteArticle({ params }: Request, res: Response, next: NextFunction): Promise<void> {
+	async deleteArticle(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
-			const id = params.id;
-			await this.articleService.deleteArticle(id);
-			this.ok(res, id);
+			const articleID = req.params.id;
+			const user = req.user;
+
+			await this.articleService.deleteArticle(articleID, user);
+			this.ok(res, articleID);
 		} catch (e) {
 			next(e);
 		}

@@ -1,12 +1,15 @@
-import { Article } from '@prisma/client';
+import { Article, Prisma, Role } from '@prisma/client';
 import { inject, injectable } from 'inversify';
 import { IConfigService } from '../config/config.service.interface';
 import { TYPES } from '../types';
+import { HTTPError } from '../services/errors/http-error.class';
+import { StatusCodes } from 'http-status-codes';
 
 import { IArticlesService } from './articles.service.interface';
 import { IArticlesRepository } from './articles.repository.interface';
 import { ArticleCreateDto } from './dto/article-create.dto';
 import { ArticleUpdateDto } from './dto/article-update.dto';
+import { ITokenPayload } from '../auth/auth.service';
 
 @injectable()
 export class ArticlesService implements IArticlesService {
@@ -19,23 +22,52 @@ export class ArticlesService implements IArticlesService {
 		return this.articlesRepository.findAllArticles();
 	}
 
-	getArticleByID(id: string): Promise<Article | Error> {
-		return this.articlesRepository.findArticleByID(id);
+	getArticleByID(articleID: string, include: Prisma.ArticleInclude | null = null): Promise<Article> {
+		return this.articlesRepository.findArticleByID(articleID, include);
+	}
+
+	async getArticleByURL(articleURL: string): Promise<Article> {
+		const article = await this.articlesRepository.findArticleByURL(articleURL, {
+			category: true,
+			_count: {
+				select: {
+					comments: true,
+				},
+			},
+		});
+
+		if (!article.isPublished) {
+			throw new HTTPError(StatusCodes.NOT_FOUND, 'Article not found');
+		}
+
+		return article;
 	}
 
 	createArticle(data: ArticleCreateDto, authorID: string): Promise<Article> {
 		return this.articlesRepository.createArticle(data, authorID);
 	}
 
-	updateArticle(id: string, data: ArticleUpdateDto): Promise<Article> {
-		return this.articlesRepository.updateArticle(id, data);
+	async updateArticle(articleID: string, user: ITokenPayload, data: ArticleUpdateDto): Promise<Article> {
+		const article = await this.getArticleByID(articleID);
+
+		if (user.id !== article.authorID && user.role !== Role.ADMIN) {
+			throw new HTTPError(StatusCodes.FORBIDDEN, 'Access denied');
+		}
+
+		return this.articlesRepository.updateArticle(articleID, data);
 	}
 
-	publishArticle(id: string, isPublished: boolean): Promise<Article> {
-		return this.articlesRepository.publishArticle(id, isPublished);
+	publishArticle(articleID: string, isPublished: boolean): Promise<Article> {
+		return this.articlesRepository.publishArticle(articleID, isPublished);
 	}
 
-	deleteArticle(id: string): Promise<Article> {
-		return this.articlesRepository.deleteArticle(id);
+	async deleteArticle(articleID: string, user: ITokenPayload): Promise<Article> {
+		const article = await this.getArticleByID(articleID);
+
+		if (user.id !== article.authorID && user.role !== Role.ADMIN) {
+			throw new HTTPError(StatusCodes.FORBIDDEN, 'Access denied');
+		}
+
+		return this.articlesRepository.deleteArticle(articleID);
 	}
 }
