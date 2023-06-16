@@ -24,7 +24,7 @@
         "useTabs": true,
         "semi": true,
         "bracketSpacing": true,
-        "printWidth": 100,
+        "printWidth": 120,
         "endOfLine": "auto"
       }
     ]

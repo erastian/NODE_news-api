@@ -4,9 +4,12 @@ import { inject, injectable } from 'inversify';
 import { TYPES } from '../types';
 import { ILogger } from '../services/logger/logger.interface';
 import 'reflect-metadata';
+import { Role } from '@prisma/client';
 
 import { IUsersController } from './users.controller.interface';
 import { IUsersService } from './users.service.interface';
+
+import { GuardMiddleware } from '../common/guard.middleware';
 
 @injectable()
 export class UsersController extends BaseController implements IUsersController {
@@ -16,8 +19,18 @@ export class UsersController extends BaseController implements IUsersController 
 	) {
 		super(loggerService);
 		this.bindRoutes([
-			{ path: '/', method: 'get', func: this.getAllUsers },
-			{ path: '/profile', method: 'get', func: this.getProfile, middlewares: [] },
+			{
+				path: '/',
+				method: 'get',
+				func: this.getAllUsers,
+				middlewares: [new GuardMiddleware([Role.ADMIN])],
+			},
+			{
+				path: '/profile',
+				method: 'get',
+				func: this.getProfile,
+				middlewares: [new GuardMiddleware()],
+			},
 		]);
 	}
 

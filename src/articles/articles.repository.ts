@@ -1,4 +1,4 @@
-import { Article } from '@prisma/client';
+import { Article, Prisma } from '@prisma/client';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../types';
 import { DatabaseService } from '../database/prisma.service';
@@ -21,6 +21,13 @@ export class ArticlesRepository implements IArticlesRepository {
 		});
 	}
 
+	async findArticleByURL(url: string, include: Prisma.ArticleInclude | null): Promise<Article> {
+		return this.databaseService.client.article.findUniqueOrThrow({
+			include,
+			where: { url },
+		});
+	}
+
 	async createArticle(data: ArticleCreateDto, authorID: string): Promise<Article> {
 		return this.databaseService.client.article.create({
 			data: { ...data, authorID },
@@ -32,6 +39,10 @@ export class ArticlesRepository implements IArticlesRepository {
 			where: { id },
 			data,
 		});
+	}
+
+	async publishArticle(id: string, isPublished: boolean): Promise<Article> {
+		return this.databaseService.client.article.update({ where: { id }, data: { isPublished } });
 	}
 
 	async deleteArticle(id: string): Promise<Article> {

@@ -17,6 +17,8 @@ import UserDTO from '../users/dto/user.dto';
 import { ITokenPayload } from './auth.service';
 import { IUsersService } from '../users/users.service.interface';
 
+import { GuardMiddleware } from '../common/guard.middleware';
+
 @injectable()
 export class AuthController extends BaseController implements IAuthController {
 	constructor(
@@ -39,10 +41,20 @@ export class AuthController extends BaseController implements IAuthController {
 				func: this.loginUser,
 				middlewares: [new ValidateMiddleware(UserLoginDto)],
 			},
-			{ path: '/logout', method: 'get', func: this.logoutUser },
+			{
+				path: '/logout',
+				method: 'get',
+				func: this.logoutUser,
+				middlewares: [new GuardMiddleware()],
+			},
 			{ path: '/token', method: 'get', func: this.getToken },
 			{ path: '/forgot-password', method: 'post', func: this.forgotPassword, middlewares: [] },
-			{ path: '/restore-password', method: 'post', func: this.restorePassword, middlewares: [] },
+			{
+				path: '/restore-password',
+				method: 'post',
+				func: this.restorePassword,
+				middlewares: [new GuardMiddleware()],
+			},
 			{ path: '/activate', method: 'post', func: this.activate },
 		]);
 	}

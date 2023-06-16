@@ -1,10 +1,14 @@
 import { Article } from '@prisma/client';
-import { IsEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsEmpty, IsMongoId, IsOptional, IsString } from 'class-validator';
 
 export class ArticleUpdateDto implements Omit<Article, 'authorID' | 'id'> {
 	@IsOptional()
 	@IsString()
 	title: string;
+
+	@IsOptional()
+	@IsString()
+	url: string;
 
 	@IsEmpty()
 	isPublished: boolean;
@@ -29,7 +33,7 @@ export class ArticleUpdateDto implements Omit<Article, 'authorID' | 'id'> {
 	authorID: string;
 
 	@IsOptional()
-	@IsNumber()
+	@IsMongoId()
 	categoryID: string;
 
 	@IsEmpty()

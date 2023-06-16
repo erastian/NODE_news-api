@@ -6,6 +6,10 @@ export class ArticleCreateDto implements Omit<Article, 'authorID' | 'id'> {
 	@IsString()
 	title: string;
 
+	@IsDefined()
+	@IsString()
+	url: string;
+
 	@IsEmpty()
 	isPublished: boolean;
 
