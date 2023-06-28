@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
 import { IConfigService } from '../config/config.service.interface';
-import { TYPES } from '../types';
+import { TYPES } from '../constants/constants';
 import { SERVER_NAME } from '../constants/constants';
 import NodeMailer from 'nodemailer';
 import hbs, { TemplateOptions } from 'nodemailer-express-handlebars';
@@ -78,10 +78,7 @@ export class MailerService implements IMailerService {
 
 			await this.transporter.sendMail(options);
 		} catch (e) {
-			throw new HTTPError(
-				StatusCodes.BAD_REQUEST,
-				`Email with restore password link for ${emailFor} was not sent.`,
-			);
+			throw new HTTPError(StatusCodes.BAD_REQUEST, `Email with restore password link for ${emailFor} was not sent.`);
 		}
 	}
 }

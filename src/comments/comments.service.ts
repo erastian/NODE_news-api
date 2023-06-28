@@ -1,6 +1,6 @@
 import { Comment } from '@prisma/client';
 import { inject, injectable } from 'inversify';
-import { TYPES } from '../types';
+import { TYPES } from '../constants/constants';
 
 import { ICommentsService } from './comments.service.interface';
 import { ICommentsRepository } from './comments.repository.interface';

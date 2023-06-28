@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
 import { BaseController } from '../common/base.controller';
-import { TYPES } from '../types';
+import { TYPES } from '../constants/constants';
 import { ILogger } from '../services/logger/logger.interface';
 import { ValidateMiddleware } from '../common/validate.middleware';
 import jwt from 'jsonwebtoken';

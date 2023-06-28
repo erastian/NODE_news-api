@@ -9,3 +9,9 @@ declare global {
 		}
 	}
 }
+
+export interface IPaginator<T> {
+	offset: number;
+	limit: number;
+	data: T[];
+}

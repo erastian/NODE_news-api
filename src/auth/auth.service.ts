@@ -1,7 +1,7 @@
 import { User } from '@prisma/client';
 import { inject, injectable } from 'inversify';
 import { IConfigService } from '../config/config.service.interface';
-import { TYPES } from '../types';
+import { TYPES } from '../constants/constants';
 import bcrypt from 'bcryptjs';
 import { StatusCodes } from 'http-status-codes';
 import { HTTPError } from '../services/errors/http-error.class';
@@ -40,9 +40,7 @@ export class AuthService implements IAuthService {
 			password: hashedPassword,
 		});
 		const { token: activationLink } = this.getActivationToken(user);
-		const activationURL = `${this.configService.get(
-			'CLIENT_URL',
-		)}/auth/activate?token=${activationLink}`;
+		const activationURL = `${this.configService.get('CLIENT_URL')}/auth/activate?token=${activationLink}`;
 
 		await this.mailerService.sendActivationMail(email, username, activationURL);
 
@@ -72,9 +70,7 @@ export class AuthService implements IAuthService {
 
 	async sendPasswordRestorationEmail(user: User): Promise<void> {
 		const { token: restoreToken } = this.getAuthToken(user);
-		const restorationURL = `${this.configService.get(
-			'CLIENT_URL',
-		)}/restore-password?token=${restoreToken}`;
+		const restorationURL = `${this.configService.get('CLIENT_URL')}/restore-password?token=${restoreToken}`;
 
 		await this.mailerService.sendRestorePasswordLink(user.email, user.username, restorationURL);
 	}
@@ -103,9 +99,7 @@ export class AuthService implements IAuthService {
 		const token = jwt.sign(tokenPayload, this.configService.get('JWT_SECRET') as Secret, {
 			expiresIn: this.configService.get('JWT_ACCESS_SECRET_EXPIRATION'),
 		});
-		const cookie = `accessToken=${token}; HttpOnly; Max-Age=${this.configService.get(
-			'JWT_ACCESS_SECRET_EXPIRATION',
-		)};`;
+		const cookie = `accessToken=${token}; HttpOnly; Max-Age=${this.configService.get('JWT_ACCESS_SECRET_EXPIRATION')};`;
 
 		return { token, cookie };
 	}

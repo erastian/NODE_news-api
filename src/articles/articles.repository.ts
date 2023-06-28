@@ -1,6 +1,6 @@
 import { Article, Prisma } from '@prisma/client';
 import { inject, injectable } from 'inversify';
-import { TYPES } from '../types';
+import { TYPES } from '../constants/constants';
 import { DatabaseService } from '../database/prisma.service';
 
 import { IArticlesRepository } from './articles.repository.interface';
@@ -11,8 +11,28 @@ import { ArticleUpdateDto } from './dto/article-update.dto';
 export class ArticlesRepository implements IArticlesRepository {
 	constructor(@inject(TYPES.DatabaseService) private databaseService: DatabaseService) {}
 
-	async findAllArticles(): Promise<Article[]> {
-		return this.databaseService.client.article.findMany();
+	async findArticles(
+		offset: number,
+		limit: number,
+		orderBy: Prisma.ArticleOrderByWithAggregationInput,
+		published: boolean,
+	): Promise<Article[]> {
+		const query = { where: { isPublished: published } };
+
+		return this.databaseService.client.article.findMany({
+			include: {
+				category: true,
+				_count: {
+					select: {
+						comments: true,
+					},
+				},
+			},
+			skip: offset,
+			take: limit,
+			orderBy,
+			...query,
+		});
 	}
 
 	async findArticleByID(id: string): Promise<Article> {

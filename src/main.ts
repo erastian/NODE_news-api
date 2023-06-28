@@ -4,7 +4,7 @@ import { IExceptionFilter } from './services/errors/exception.filter.interface';
 import { ExceptionFilter } from './services/errors/exception.filter';
 import { Container, ContainerModule, interfaces } from 'inversify';
 import { ILogger } from './services/logger/logger.interface';
-import { TYPES } from './types';
+import { TYPES } from './constants/constants';
 import { IConfigService } from './config/config.service.interface';
 import { ConfigService } from './config/config.service';
 import { DatabaseService } from './database/prisma.service';

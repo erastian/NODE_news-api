@@ -1,6 +1,6 @@
 import { Category } from '@prisma/client';
 import { inject, injectable } from 'inversify';
-import { TYPES } from '../types';
+import { TYPES } from '../constants/constants';
 import { DatabaseService } from '../database/prisma.service';
 
 import { ICategoriesRepository } from './categories.repository.interface';
