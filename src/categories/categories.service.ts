@@ -1,7 +1,7 @@
 import { Category } from '@prisma/client';
 import { inject, injectable } from 'inversify';
 import { IConfigService } from '../config/config.service.interface';
-import { TYPES } from '../types';
+import { TYPES } from '../constants/constants';
 
 import { ICategoriesService } from './categories.service.interface';
 import { ICategoriesRepository } from './categories.repository.interface';

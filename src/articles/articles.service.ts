@@ -1,7 +1,7 @@
 import { Article, Prisma, Role } from '@prisma/client';
 import { inject, injectable } from 'inversify';
 import { IConfigService } from '../config/config.service.interface';
-import { TYPES } from '../types';
+import { TYPES } from '../constants/constants';
 import { HTTPError } from '../services/errors/http-error.class';
 import { StatusCodes } from 'http-status-codes';
 
@@ -10,6 +10,7 @@ import { IArticlesRepository } from './articles.repository.interface';
 import { ArticleCreateDto } from './dto/article-create.dto';
 import { ArticleUpdateDto } from './dto/article-update.dto';
 import { ITokenPayload } from '../auth/auth.service';
+import { IPaginator } from '../types/';
 
 @injectable()
 export class ArticlesService implements IArticlesService {
@@ -18,8 +19,23 @@ export class ArticlesService implements IArticlesService {
 		@inject(TYPES.IArticlesRepository) private articlesRepository: IArticlesRepository,
 	) {}
 
-	getAllArticles(): Promise<Article[]> {
-		return this.articlesRepository.findAllArticles();
+	async getArticles(
+		offset: number,
+		limit: number,
+		orderBy: Prisma.ArticleOrderByWithAggregationInput,
+		published: boolean,
+	): Promise<IPaginator<Article>> {
+		const data = await this.articlesRepository.findArticles(offset, limit, orderBy, published);
+
+		return { offset, limit, data };
+	}
+
+	async findPublishedArticles(offset: number, limit: number): Promise<IPaginator<Article>> {
+		return await this.getArticles(offset, limit, { id: 'desc' }, true);
+	}
+
+	async findDraftArticles(offset: number, limit: number): Promise<IPaginator<Article>> {
+		return await this.getArticles(offset, limit, { id: 'desc' }, false);
 	}
 
 	getArticleByID(articleID: string, include: Prisma.ArticleInclude | null = null): Promise<Article> {

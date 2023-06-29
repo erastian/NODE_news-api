@@ -1,7 +1,7 @@
 import { BaseController } from '../common/base.controller';
 import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
-import { TYPES } from '../types';
+import { TYPES } from '../constants/constants';
 import { ILogger } from '../services/logger/logger.interface';
 import 'reflect-metadata';
 import { ValidateMiddleware } from '../common/validate.middleware';
@@ -24,7 +24,13 @@ export class ArticlesController extends BaseController implements IArticlesContr
 	) {
 		super(loggerService);
 		this.bindRoutes([
-			{ path: '/', method: 'get', func: this.getAllArticles },
+			{ path: '/', method: 'get', func: this.getPublishedArticles },
+			{
+				path: '/drafts',
+				method: 'get',
+				func: this.getDraftArticles,
+				middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER])],
+			},
 			{ path: '/:url', method: 'get', func: this.getArticleByURL },
 			{
 				path: '/',
@@ -53,12 +59,27 @@ export class ArticlesController extends BaseController implements IArticlesContr
 		]);
 	}
 
-	async getAllArticles(req: Request, res: Response, next: NextFunction): Promise<void> {
+	async getPublishedArticles(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
-			const result = await this.articleService.getAllArticles();
+			const offset = Number(req.query.offset) || 0;
+			const limit = Number(req.query.limit) || 10;
+
+			const result = await this.articleService.findPublishedArticles(offset, limit);
 			this.ok(res, result);
 		} catch (e) {
 			next(e);
+		}
+	}
+
+	async getDraftArticles(req: Request, res: Response, next: NextFunction): Promise<void> {
+		try {
+			const offset = Number(req.query.offset) || 0;
+			const limit = Number(req.query.limit) || 10;
+
+			const result = await this.articleService.findDraftArticles(offset, limit);
+			this.ok(res, result);
+		} catch (e) {
+			return next(e);
 		}
 	}
 

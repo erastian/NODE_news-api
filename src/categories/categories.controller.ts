@@ -1,7 +1,7 @@
 import { BaseController } from '../common/base.controller';
 import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
-import { TYPES } from '../types';
+import { TYPES } from '../constants/constants';
 import { ILogger } from '../services/logger/logger.interface';
 import 'reflect-metadata';
 import { ValidateMiddleware } from '../common/validate.middleware';
@@ -29,19 +29,13 @@ export class CategoriesController extends BaseController implements ICategoriesC
 				path: '/',
 				method: 'post',
 				func: this.createCategory,
-				middlewares: [
-					new GuardMiddleware([Role.ADMIN, Role.MANAGER]),
-					new ValidateMiddleware(CategoryCreateDto),
-				],
+				middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER]), new ValidateMiddleware(CategoryCreateDto)],
 			},
 			{
 				path: '/:id',
 				method: 'patch',
 				func: this.updateCategory,
-				middlewares: [
-					new GuardMiddleware([Role.ADMIN, Role.MANAGER]),
-					new ValidateMiddleware(CategoryUpdateDto),
-				],
+				middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER]), new ValidateMiddleware(CategoryUpdateDto)],
 			},
 		]);
 	}
@@ -74,11 +68,7 @@ export class CategoriesController extends BaseController implements ICategoriesC
 		}
 	}
 
-	async updateCategory(
-		{ params, body }: Request,
-		res: Response,
-		next: NextFunction,
-	): Promise<void> {
+	async updateCategory({ params, body }: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
 			const id = params.id;
 			const result = await this.categoriesService.updateCategory(id, body);

@@ -1,6 +1,6 @@
 import { User } from '@prisma/client';
 import { inject, injectable } from 'inversify';
-import { TYPES } from '../types';
+import { TYPES } from '../constants/constants';
 
 import { IUsersService } from './users.service.interface';
 import { IUsersRepository } from './users.repository.interface';
