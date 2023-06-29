@@ -25,6 +25,12 @@ export class ArticlesController extends BaseController implements IArticlesContr
 		super(loggerService);
 		this.bindRoutes([
 			{ path: '/', method: 'get', func: this.getPublishedArticles },
+			{
+				path: '/drafts',
+				method: 'get',
+				func: this.getDraftArticles,
+				middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER])],
+			},
 			{ path: '/:url', method: 'get', func: this.getArticleByURL },
 			{
 				path: '/',
@@ -62,6 +68,18 @@ export class ArticlesController extends BaseController implements IArticlesContr
 			this.ok(res, result);
 		} catch (e) {
 			next(e);
+		}
+	}
+
+	async getDraftArticles(req: Request, res: Response, next: NextFunction): Promise<void> {
+		try {
+			const offset = Number(req.query.offset) || 0;
+			const limit = Number(req.query.limit) || 10;
+
+			const result = await this.articleService.findDraftArticles(offset, limit);
+			this.ok(res, result);
+		} catch (e) {
+			return next(e);
 		}
 	}
 

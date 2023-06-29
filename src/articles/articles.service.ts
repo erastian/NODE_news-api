@@ -34,6 +34,10 @@ export class ArticlesService implements IArticlesService {
 		return await this.getArticles(offset, limit, { id: 'desc' }, true);
 	}
 
+	async findDraftArticles(offset: number, limit: number): Promise<IPaginator<Article>> {
+		return await this.getArticles(offset, limit, { id: 'desc' }, false);
+	}
+
 	getArticleByID(articleID: string, include: Prisma.ArticleInclude | null = null): Promise<Article> {
 		return this.articlesRepository.findArticleByID(articleID, include);
 	}
