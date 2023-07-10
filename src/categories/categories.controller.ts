@@ -17,27 +17,32 @@ import { GuardMiddleware } from '../common/guard.middleware';
 
 @injectable()
 export class CategoriesController extends BaseController implements ICategoriesController {
+	private context = 'categories';
+
 	constructor(
-		@inject(TYPES.ILogger) private loggerService: ILogger,
+		@inject(TYPES.ILogger) private logger: ILogger,
 		@inject(TYPES.ICategoriesService) private categoriesService: ICategoriesService,
 	) {
-		super(loggerService);
-		this.bindRoutes([
-			{ path: '/', method: 'get', func: this.getAllCategories },
-			{ path: '/:url', method: 'get', func: this.getCategoryByURL },
-			{
-				path: '/',
-				method: 'post',
-				func: this.createCategory,
-				middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER]), new ValidateMiddleware(CategoryCreateDto)],
-			},
-			{
-				path: '/:id',
-				method: 'patch',
-				func: this.updateCategory,
-				middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER]), new ValidateMiddleware(CategoryUpdateDto)],
-			},
-		]);
+		super(logger);
+		this.bindRoutes(
+			[
+				{ path: '/', method: 'get', func: this.getAllCategories },
+				{ path: '/:url', method: 'get', func: this.getCategoryByURL },
+				{
+					path: '/',
+					method: 'post',
+					func: this.createCategory,
+					middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER]), new ValidateMiddleware(CategoryCreateDto)],
+				},
+				{
+					path: '/:id',
+					method: 'patch',
+					func: this.updateCategory,
+					middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER]), new ValidateMiddleware(CategoryUpdateDto)],
+				},
+			],
+			this.context,
+		);
 	}
 
 	async getAllCategories(req: Request, res: Response, next: NextFunction): Promise<void> {

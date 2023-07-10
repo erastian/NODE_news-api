@@ -15,48 +15,54 @@ import { ArticleUpdateDto } from './dto/article-update.dto';
 import { ArticlePublishDto } from './dto/article-publish.dto';
 
 import { GuardMiddleware } from '../common/guard.middleware';
+import { Exception } from '../services/errors/exception.class';
 
 @injectable()
 export class ArticlesController extends BaseController implements IArticlesController {
+	public context = 'articles';
+
 	constructor(
-		@inject(TYPES.ILogger) private loggerService: ILogger,
+		@inject(TYPES.ILogger) private logger: ILogger,
 		@inject(TYPES.IArticlesService) private articleService: IArticlesService,
 	) {
-		super(loggerService);
-		this.bindRoutes([
-			{ path: '/', method: 'get', func: this.getPublishedArticles },
-			{
-				path: '/drafts',
-				method: 'get',
-				func: this.getDraftArticles,
-				middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER])],
-			},
-			{ path: '/:url', method: 'get', func: this.getArticleByURL },
-			{
-				path: '/',
-				method: 'post',
-				func: this.createArticle,
-				middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER]), new ValidateMiddleware(ArticleCreateDto)],
-			},
-			{
-				path: '/:id',
-				method: 'patch',
-				func: this.updateArticle,
-				middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER]), new ValidateMiddleware(ArticleUpdateDto)],
-			},
-			{
-				path: '/:id/publish',
-				method: 'post',
-				func: this.publishArticle,
-				middlewares: [new GuardMiddleware([Role.ADMIN]), new ValidateMiddleware(ArticlePublishDto)],
-			},
-			{
-				path: '/:id',
-				method: 'delete',
-				func: this.deleteArticle,
-				middlewares: [new GuardMiddleware([Role.ADMIN])],
-			},
-		]);
+		super(logger);
+		this.bindRoutes(
+			[
+				{ path: '/', method: 'get', func: this.getPublishedArticles },
+				{
+					path: '/drafts',
+					method: 'get',
+					func: this.getDraftArticles,
+					middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER])],
+				},
+				{ path: '/:url', method: 'get', func: this.getArticleByURL },
+				{
+					path: '/',
+					method: 'post',
+					func: this.createArticle,
+					middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER]), new ValidateMiddleware(ArticleCreateDto)],
+				},
+				{
+					path: '/:id',
+					method: 'patch',
+					func: this.updateArticle,
+					middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER]), new ValidateMiddleware(ArticleUpdateDto)],
+				},
+				{
+					path: '/:id/publish',
+					method: 'post',
+					func: this.publishArticle,
+					middlewares: [new GuardMiddleware([Role.ADMIN]), new ValidateMiddleware(ArticlePublishDto)],
+				},
+				{
+					path: '/:id',
+					method: 'delete',
+					func: this.deleteArticle,
+					middlewares: [new GuardMiddleware([Role.ADMIN])],
+				},
+			],
+			this.context,
+		);
 	}
 
 	async getPublishedArticles(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -67,6 +73,7 @@ export class ArticlesController extends BaseController implements IArticlesContr
 			const result = await this.articleService.findPublishedArticles(offset, limit);
 			this.ok(res, result);
 		} catch (e) {
+			//this.logger.error(this.context, 'Something went wrong when gathering articles', e);
 			next(e);
 		}
 	}
@@ -79,6 +86,7 @@ export class ArticlesController extends BaseController implements IArticlesContr
 			const result = await this.articleService.findDraftArticles(offset, limit);
 			this.ok(res, result);
 		} catch (e) {
+			//this.logger.error(this.context, 'Something went wrong when gathering draft articles', e);
 			return next(e);
 		}
 	}
@@ -91,7 +99,7 @@ export class ArticlesController extends BaseController implements IArticlesContr
 
 			this.ok(res, result);
 		} catch (e) {
-			return next(e);
+			return next(new Exception(StatusCodes.NOT_FOUND, `Article "/${req.params.url}" not found`, this.context));
 		}
 	}
 
@@ -114,7 +122,13 @@ export class ArticlesController extends BaseController implements IArticlesContr
 
 			this.ok(res, result);
 		} catch (e) {
-			next(e);
+			next(
+				new Exception(
+					StatusCodes.UNPROCESSABLE_ENTITY,
+					`The server was unable to update article with ID:"${req.params.id}", due to semantic errors`,
+					this.context,
+				),
+			);
 		}
 	}
 

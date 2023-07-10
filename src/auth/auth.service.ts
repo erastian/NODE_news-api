@@ -4,7 +4,7 @@ import { IConfigService } from '../config/config.service.interface';
 import { TYPES } from '../constants/constants';
 import bcrypt from 'bcryptjs';
 import { StatusCodes } from 'http-status-codes';
-import { HTTPError } from '../services/errors/http-error.class';
+import { Exception } from '../services/errors/exception.class';
 import jwt, { Secret } from 'jsonwebtoken';
 import { IMailerService } from '../mailer/mailer.service.interface';
 import { ObjectId } from 'bson';
@@ -49,7 +49,7 @@ export class AuthService implements IAuthService {
 
 	async activateUser(id: string): Promise<void> {
 		if (!ObjectId.isValid(id)) {
-			throw new HTTPError(StatusCodes.BAD_REQUEST, 'Wrong activation ID');
+			throw new Exception(StatusCodes.BAD_REQUEST, 'Wrong activation ID');
 		}
 
 		const user = await this.usersService.getUserByID(id);
@@ -59,7 +59,7 @@ export class AuthService implements IAuthService {
 
 	async restorePassword(id: string, newPassword: string): Promise<void> {
 		if (!ObjectId.isValid(id)) {
-			throw new HTTPError(StatusCodes.UNAUTHORIZED, 'Wrong restoration ID');
+			throw new Exception(StatusCodes.UNAUTHORIZED, 'Wrong restoration ID');
 		}
 
 		const existedUser = await this.usersService.getUserByID(id);
@@ -85,7 +85,7 @@ export class AuthService implements IAuthService {
 	async comparePassword(rawPassword: string, hashedPassword: string): Promise<void> {
 		const compareResult = await bcrypt.compare(rawPassword, hashedPassword);
 		if (!compareResult) {
-			throw new HTTPError(StatusCodes.UNAUTHORIZED, 'Bad credentials');
+			throw new Exception(StatusCodes.UNAUTHORIZED, 'Bad credentials');
 		}
 	}
 
