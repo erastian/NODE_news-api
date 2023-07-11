@@ -10,7 +10,7 @@ import { StatusCodes } from 'http-status-codes';
 export abstract class BaseController {
 	private readonly _router: Router;
 
-	constructor(private logger: ILogger) {
+	constructor(private loggerService: ILogger) {
 		this._router = Router();
 	}
 
@@ -31,9 +31,11 @@ export abstract class BaseController {
 		return res.sendStatus(StatusCodes.CREATED);
 	}
 
-	protected bindRoutes(routes: IControllerRoute[]): void {
+	protected bindRoutes(routes: IControllerRoute[], context?: string): void {
 		for (const route of routes) {
-			this.logger.log(`[${route.method}] ${route.path}`);
+			this.loggerService.log(
+				`[Router] [${route.method.toUpperCase()}] ${' \t\b\b\b\b\b\b\b'.padEnd(0)} ${context}${route.path}`,
+			);
 			const middleware = route.middlewares?.map((m) => m.execute.bind(m));
 			const handler = route.func.bind(this);
 			const pipeline = middleware ? [...middleware, handler] : handler;

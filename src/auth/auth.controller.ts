@@ -7,7 +7,7 @@ import { ValidateMiddleware } from '../common/validate.middleware';
 import jwt from 'jsonwebtoken';
 import { IConfigService } from '../config/config.service.interface';
 import { StatusCodes } from 'http-status-codes';
-import { HTTPError } from '../services/errors/http-error.class';
+import { Exception } from '../services/errors/exception.class';
 
 import { IAuthController } from './auth.controller.interface';
 import { IAuthService } from './auth.service.interface';
@@ -21,42 +21,47 @@ import { GuardMiddleware } from '../common/guard.middleware';
 
 @injectable()
 export class AuthController extends BaseController implements IAuthController {
+	private context = 'auth';
+
 	constructor(
-		@inject(TYPES.ILogger) private loggerService: ILogger,
+		@inject(TYPES.ILogger) private logger: ILogger,
 		@inject(TYPES.IConfigService) private configService: IConfigService,
 		@inject(TYPES.IAuthService) private authService: IAuthService,
 		@inject(TYPES.IUsersService) private usersService: IUsersService,
 	) {
-		super(loggerService);
-		this.bindRoutes([
-			{
-				path: '/register',
-				method: 'post',
-				func: this.registerUser,
-				middlewares: [new ValidateMiddleware(UserRegisterDto)],
-			},
-			{
-				path: '/login',
-				method: 'post',
-				func: this.loginUser,
-				middlewares: [new ValidateMiddleware(UserLoginDto)],
-			},
-			{
-				path: '/logout',
-				method: 'get',
-				func: this.logoutUser,
-				middlewares: [new GuardMiddleware()],
-			},
-			{ path: '/token', method: 'get', func: this.getToken },
-			{ path: '/forgot-password', method: 'post', func: this.forgotPassword, middlewares: [] },
-			{
-				path: '/restore-password',
-				method: 'post',
-				func: this.restorePassword,
-				middlewares: [new GuardMiddleware()],
-			},
-			{ path: '/activate', method: 'post', func: this.activate },
-		]);
+		super(logger);
+		this.bindRoutes(
+			[
+				{
+					path: '/register',
+					method: 'post',
+					func: this.registerUser,
+					middlewares: [new ValidateMiddleware(UserRegisterDto)],
+				},
+				{
+					path: '/login',
+					method: 'post',
+					func: this.loginUser,
+					middlewares: [new ValidateMiddleware(UserLoginDto)],
+				},
+				{
+					path: '/logout',
+					method: 'get',
+					func: this.logoutUser,
+					middlewares: [new GuardMiddleware()],
+				},
+				{ path: '/token', method: 'get', func: this.getToken },
+				{ path: '/forgot-password', method: 'post', func: this.forgotPassword, middlewares: [] },
+				{
+					path: '/restore-password',
+					method: 'post',
+					func: this.restorePassword,
+					middlewares: [new GuardMiddleware()],
+				},
+				{ path: '/activate', method: 'post', func: this.activate },
+			],
+			this.context,
+		);
 	}
 
 	async getToken(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -64,7 +69,7 @@ export class AuthController extends BaseController implements IAuthController {
 			const { refreshTokenFromRequest } = req.cookies;
 
 			if (!refreshTokenFromRequest) {
-				return next(new HTTPError(StatusCodes.FORBIDDEN, 'Access denied.'));
+				return next(new Exception(StatusCodes.FORBIDDEN, 'Access denied.'));
 			}
 
 			const userFromToken = jwt.verify(

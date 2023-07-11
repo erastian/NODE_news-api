@@ -13,19 +13,29 @@ import { CommentCreateDto } from './dto/comment-create.dto';
 
 @injectable()
 export class CommentsController extends BaseController implements ICommentsController {
+	public context = 'comments';
+
 	constructor(
-		@inject(TYPES.ILogger) private loggerService: ILogger,
+		@inject(TYPES.ILogger) private logger: ILogger,
 		@inject(TYPES.ICommentsService) private commentsService: ICommentsService,
 	) {
-		super(loggerService);
-		this.bindRoutes([
-			{ path: '/', method: 'post', func: this.createComment, middlewares: [new ValidateMiddleware(CommentCreateDto)] },
-			{ path: '/:id/publish', method: 'post', func: this.publishComment },
-			{ path: '/:id', method: 'delete', func: this.deleteComment },
-			{ path: '/', method: 'get', func: this.findAllComments },
-			{ path: '/article/:articleID', method: 'get', func: this.findAllRelatedPublishedComments },
-			{ path: '/article/:articleID/comments', method: 'get', func: this.findAllRelatedComments },
-		]);
+		super(logger);
+		this.bindRoutes(
+			[
+				{
+					path: '/',
+					method: 'post',
+					func: this.createComment,
+					middlewares: [new ValidateMiddleware(CommentCreateDto)],
+				},
+				{ path: '/:id/publish', method: 'post', func: this.publishComment },
+				{ path: '/:id', method: 'delete', func: this.deleteComment },
+				{ path: '/', method: 'get', func: this.findAllComments },
+				{ path: '/article/:articleID', method: 'get', func: this.findAllRelatedPublishedComments },
+				{ path: '/article/:articleID/comments', method: 'get', func: this.findAllRelatedComments },
+			],
+			this.context,
+		);
 	}
 
 	async createComment(req: Request, res: Response, next: NextFunction): Promise<void> {

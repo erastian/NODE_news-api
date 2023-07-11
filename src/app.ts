@@ -1,12 +1,12 @@
 import express, { Express } from 'express';
 import { Server } from 'http';
-import { IExceptionFilter } from './services/errors/exception.filter.interface';
 import { ILogger } from './services/logger/logger.interface';
 import { inject, injectable } from 'inversify';
 import { TYPES } from './constants/constants';
 import { PORT } from './constants/constants';
 import { StatusCodes } from 'http-status-codes';
 import 'reflect-metadata';
+import { IExceptionFilter } from './services/errors/exception.filter.interface';
 import { DatabaseService } from './database/prisma.service';
 import { IConfigService } from './config/config.service.interface';
 import { AuthMiddleware } from './common/auth.middleware';

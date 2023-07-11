@@ -1,5 +1,5 @@
 import { App } from './app';
-import { LoggerService } from './services/logger/logger.service';
+import { logger } from './services/logger/logger.service';
 import { IExceptionFilter } from './services/errors/exception.filter.interface';
 import { ExceptionFilter } from './services/errors/exception.filter';
 import { Container, ContainerModule, interfaces } from 'inversify';
@@ -46,9 +46,7 @@ export interface IBootStrapReturn {
 }
 
 export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
-	bind<ILogger>(TYPES.ILogger).to(LoggerService).inSingletonScope();
-	bind<IExceptionFilter>(TYPES.IExceptionFilter).to(ExceptionFilter);
-	bind<DatabaseService>(TYPES.DatabaseService).to(DatabaseService).inSingletonScope();
+	bind<ILogger>(TYPES.ILogger).to(logger).inSingletonScope();
 	bind<IConfigService>(TYPES.IConfigService).to(ConfigService).inSingletonScope();
 	bind<IMailerService>(TYPES.IMailerService).to(MailerService).inSingletonScope();
 	bind<IAuthController>(TYPES.IAuthController).to(AuthController).inSingletonScope();
@@ -65,6 +63,8 @@ export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
 	bind<ICategoriesRepository>(TYPES.ICategoriesRepository).to(CategoriesRepository).inSingletonScope();
 	bind<ICommentsRepository>(TYPES.ICommentsRepository).to(CommentsRepository).inSingletonScope();
 	bind<IUsersRepository>(TYPES.IUsersRepository).to(UsersRepository).inSingletonScope();
+	bind<IExceptionFilter>(TYPES.IExceptionFilter).to(ExceptionFilter);
+	bind<DatabaseService>(TYPES.DatabaseService).to(DatabaseService).inSingletonScope();
 	bind<App>(TYPES.Application).to(App);
 });
 

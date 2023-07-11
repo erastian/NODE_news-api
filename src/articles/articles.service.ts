@@ -2,7 +2,7 @@ import { Article, Prisma, Role } from '@prisma/client';
 import { inject, injectable } from 'inversify';
 import { IConfigService } from '../config/config.service.interface';
 import { TYPES } from '../constants/constants';
-import { HTTPError } from '../services/errors/http-error.class';
+import { Exception } from '../services/errors/exception.class';
 import { StatusCodes } from 'http-status-codes';
 
 import { IArticlesService } from './articles.service.interface';
@@ -53,7 +53,7 @@ export class ArticlesService implements IArticlesService {
 		});
 
 		if (!article.isPublished) {
-			throw new HTTPError(StatusCodes.NOT_FOUND, 'Article not found');
+			throw new Exception(StatusCodes.NOT_FOUND, 'Article not found');
 		}
 
 		return article;
@@ -67,7 +67,7 @@ export class ArticlesService implements IArticlesService {
 		const article = await this.getArticleByID(articleID);
 
 		if (user.id !== article.authorID && user.role !== Role.ADMIN) {
-			throw new HTTPError(StatusCodes.FORBIDDEN, 'Access denied');
+			throw new Exception(StatusCodes.FORBIDDEN, 'Access denied');
 		}
 
 		return this.articlesRepository.updateArticle(articleID, data);
@@ -81,7 +81,7 @@ export class ArticlesService implements IArticlesService {
 		const article = await this.getArticleByID(articleID);
 
 		if (user.id !== article.authorID && user.role !== Role.ADMIN) {
-			throw new HTTPError(StatusCodes.FORBIDDEN, 'Access denied');
+			throw new Exception(StatusCodes.FORBIDDEN, 'Access denied');
 		}
 
 		return this.articlesRepository.deleteArticle(articleID);

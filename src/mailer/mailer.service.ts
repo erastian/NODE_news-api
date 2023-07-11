@@ -5,7 +5,7 @@ import { TYPES } from '../constants/constants';
 import { SERVER_NAME } from '../constants/constants';
 import NodeMailer from 'nodemailer';
 import hbs, { TemplateOptions } from 'nodemailer-express-handlebars';
-import { HTTPError } from '../services/errors/http-error.class';
+import { Exception } from '../services/errors/exception.class';
 import { StatusCodes } from 'http-status-codes';
 import { Options } from 'nodemailer/lib/mailer';
 
@@ -57,7 +57,7 @@ export class MailerService implements IMailerService {
 
 			await this.transporter.sendMail(options);
 		} catch (e) {
-			throw new HTTPError(StatusCodes.BAD_REQUEST, `Email to ${emailFor} was not sent.`);
+			throw new Exception(StatusCodes.BAD_REQUEST, `Email to ${emailFor} was not sent.`);
 		}
 	}
 
@@ -78,7 +78,7 @@ export class MailerService implements IMailerService {
 
 			await this.transporter.sendMail(options);
 		} catch (e) {
-			throw new HTTPError(StatusCodes.BAD_REQUEST, `Email with restore password link for ${emailFor} was not sent.`);
+			throw new Exception(StatusCodes.BAD_REQUEST, `Email with restore password link for ${emailFor} was not sent.`);
 		}
 	}
 }
