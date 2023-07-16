@@ -60,7 +60,7 @@ export class MailerService implements IMailerService {
 			};
 
 			await this.transporter.sendMail(options);
-			this.logger.log(`${MailerService.name}] Activation email for ${emailFor} was successfully sent.`);
+			this.logger.log(`[${MailerService.name}] Activation email for ${emailFor} was successfully sent.`);
 		} catch (e) {
 			throw new Exception(StatusCodes.BAD_REQUEST, `Activation email to ${emailFor} was not sent.`, MailerService.name);
 		}
@@ -83,7 +83,7 @@ export class MailerService implements IMailerService {
 
 			await this.transporter.sendMail(options);
 			this.logger.log(
-				`${MailerService.name}] Email with password restoration link for ${emailFor} was successfully sent.`,
+				`[${MailerService.name}] Email with password restoration link for ${emailFor} was successfully sent.`,
 			);
 		} catch (e) {
 			throw new Exception(
