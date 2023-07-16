@@ -14,6 +14,7 @@ import { IAuthService } from './auth.service.interface';
 import { UserRegisterDto } from './dto/user-register.dto';
 import { UserLoginDto } from './dto/user-login.dto';
 import UserDTO from '../users/dto/user.dto';
+import { ForgotPasswordDTO } from './dto/forgot-password';
 import { ITokenPayload } from './auth.service';
 import { IUsersService } from '../users/users.service.interface';
 
@@ -51,11 +52,16 @@ export class AuthController extends BaseController implements IAuthController {
 					middlewares: [new GuardMiddleware()],
 				},
 				{ path: '/token', method: 'get', func: this.getToken },
-				{ path: '/forgot-password', method: 'post', func: this.forgotPassword, middlewares: [] },
 				{
-					path: '/restore-password',
+					path: '/forgot-password',
 					method: 'post',
-					func: this.restorePassword,
+					func: this.forgotPassword,
+					middlewares: [new ValidateMiddleware(ForgotPasswordDTO)],
+				},
+				{
+					path: '/update-password',
+					method: 'post',
+					func: this.updatePassword,
 					middlewares: [new GuardMiddleware()],
 				},
 				{ path: '/activate', method: 'post', func: this.activate },
@@ -69,7 +75,7 @@ export class AuthController extends BaseController implements IAuthController {
 			const { refreshTokenFromRequest } = req.cookies;
 
 			if (!refreshTokenFromRequest) {
-				return next(new Exception(StatusCodes.FORBIDDEN, 'Access denied.'));
+				return next(new Exception(StatusCodes.FORBIDDEN, 'Access denied.', AuthController.name));
 			}
 
 			const userFromToken = jwt.verify(
@@ -115,12 +121,12 @@ export class AuthController extends BaseController implements IAuthController {
 		}
 	}
 
-	async restorePassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+	async updatePassword(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
 			const user = req.user;
 			const { newPassword } = req.body;
 
-			await this.authService.restorePassword(user.id, newPassword);
+			await this.authService.updatePassword(user.id, newPassword);
 
 			this.ok(res, 'Password was successfully changed');
 		} catch (e) {

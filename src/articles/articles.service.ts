@@ -38,8 +38,8 @@ export class ArticlesService implements IArticlesService {
 		return await this.getArticles(offset, limit, { id: 'desc' }, false);
 	}
 
-	getArticleByID(articleID: string, include: Prisma.ArticleInclude | null = null): Promise<Article> {
-		return this.articlesRepository.findArticleByID(articleID, include);
+	getArticleByID(articleID: string): Promise<Article> {
+		return this.articlesRepository.findArticleByID(articleID);
 	}
 
 	async getArticleByURL(articleURL: string): Promise<Article> {
@@ -53,7 +53,7 @@ export class ArticlesService implements IArticlesService {
 		});
 
 		if (!article.isPublished) {
-			throw new Exception(StatusCodes.NOT_FOUND, 'Article not found');
+			throw new Exception(StatusCodes.NOT_FOUND, 'Article not found', ArticlesService.name);
 		}
 
 		return article;
@@ -67,7 +67,7 @@ export class ArticlesService implements IArticlesService {
 		const article = await this.getArticleByID(articleID);
 
 		if (user.id !== article.authorID && user.role !== Role.ADMIN) {
-			throw new Exception(StatusCodes.FORBIDDEN, 'Access denied');
+			throw new Exception(StatusCodes.FORBIDDEN, 'Access denied', ArticlesService.name);
 		}
 
 		return this.articlesRepository.updateArticle(articleID, data);

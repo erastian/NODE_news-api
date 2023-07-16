@@ -10,8 +10,18 @@ import { CreateUserDto } from './dto/create-user.dto';
 export class UsersRepository implements IUsersRepository {
 	constructor(@inject(TYPES.DatabaseService) private databaseService: DatabaseService) {}
 
-	async findAllUsers(): Promise<User[]> {
-		return this.databaseService.client.user.findMany();
+	async findAllUsers(): Promise<Omit<User, 'password'>[]> {
+		return this.databaseService.client.user.findMany({
+			select: {
+				id: true,
+				username: true,
+				email: true,
+				isActivated: true,
+				role: true,
+				createdAt: true,
+				updatedAt: true,
+			},
+		});
 	}
 
 	async findUserByEmail(email: string): Promise<User> {

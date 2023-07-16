@@ -10,6 +10,7 @@ import { StatusCodes } from 'http-status-codes';
 import { Options } from 'nodemailer/lib/mailer';
 
 import { IMailerService } from './mailer.service.interface';
+import { ILogger } from '../services/logger/logger.interface';
 
 type ExtendedOptions = Options & TemplateOptions;
 
@@ -17,7 +18,10 @@ type ExtendedOptions = Options & TemplateOptions;
 export class MailerService implements IMailerService {
 	private readonly transporter: NodeMailer.Transporter;
 
-	constructor(@inject(TYPES.IConfigService) private configService: IConfigService) {
+	constructor(
+		@inject(TYPES.ILogger) private logger: ILogger,
+		@inject(TYPES.IConfigService) private configService: IConfigService,
+	) {
 		this.transporter = NodeMailer.createTransport({
 			service: 'Hotmail',
 			auth: {
@@ -56,8 +60,9 @@ export class MailerService implements IMailerService {
 			};
 
 			await this.transporter.sendMail(options);
+			this.logger.log(`${MailerService.name}] Activation email for ${emailFor} was successfully sent.`);
 		} catch (e) {
-			throw new Exception(StatusCodes.BAD_REQUEST, `Email to ${emailFor} was not sent.`);
+			throw new Exception(StatusCodes.BAD_REQUEST, `Activation email to ${emailFor} was not sent.`, MailerService.name);
 		}
 	}
 
@@ -77,8 +82,15 @@ export class MailerService implements IMailerService {
 			};
 
 			await this.transporter.sendMail(options);
+			this.logger.log(
+				`${MailerService.name}] Email with password restoration link for ${emailFor} was successfully sent.`,
+			);
 		} catch (e) {
-			throw new Exception(StatusCodes.BAD_REQUEST, `Email with restore password link for ${emailFor} was not sent.`);
+			throw new Exception(
+				StatusCodes.BAD_REQUEST,
+				`Email with restore password link for ${emailFor} was not sent.`,
+				MailerService.name,
+			);
 		}
 	}
 }

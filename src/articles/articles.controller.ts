@@ -73,7 +73,6 @@ export class ArticlesController extends BaseController implements IArticlesContr
 			const result = await this.articleService.findPublishedArticles(offset, limit);
 			this.ok(res, result);
 		} catch (e) {
-			//this.logger.error(this.context, 'Something went wrong when gathering articles', e);
 			next(e);
 		}
 	}
@@ -86,7 +85,6 @@ export class ArticlesController extends BaseController implements IArticlesContr
 			const result = await this.articleService.findDraftArticles(offset, limit);
 			this.ok(res, result);
 		} catch (e) {
-			//this.logger.error(this.context, 'Something went wrong when gathering draft articles', e);
 			return next(e);
 		}
 	}
@@ -99,7 +97,9 @@ export class ArticlesController extends BaseController implements IArticlesContr
 
 			this.ok(res, result);
 		} catch (e) {
-			return next(new Exception(StatusCodes.NOT_FOUND, `Article "/${req.params.url}" not found`, this.context));
+			return next(
+				new Exception(StatusCodes.NOT_FOUND, `Article "/${req.params.url}" not found`, ArticlesController.name),
+			);
 		}
 	}
 
@@ -122,13 +122,7 @@ export class ArticlesController extends BaseController implements IArticlesContr
 
 			this.ok(res, result);
 		} catch (e) {
-			next(
-				new Exception(
-					StatusCodes.UNPROCESSABLE_ENTITY,
-					`The server was unable to update article with ID:"${req.params.id}", due to semantic errors`,
-					this.context,
-				),
-			);
+			next(e);
 		}
 	}
 

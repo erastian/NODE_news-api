@@ -12,7 +12,7 @@ export interface IArticlesService {
 	) => Promise<IPaginator<Article>>;
 	findPublishedArticles: (offset: number, limit: number) => Promise<IPaginator<Article>>;
 	findDraftArticles: (offset: number, limit: number) => Promise<IPaginator<Article>>;
-	getArticleByID: (articleID: string, include: Prisma.ArticleInclude | null) => Promise<Article | Error>;
+	getArticleByID: (articleID: string) => Promise<Article | Error>;
 	getArticleByURL: (articleURL: string) => Promise<Article>;
 	createArticle: (data: ArticleCreateDto, authorID: string) => Promise<Article>;
 	updateArticle: (articleID: string, user: ITokenPayload, data: ArticleUpdateDto) => Promise<Article>;
