@@ -4,7 +4,7 @@ import { ITokenPayload } from '../auth/auth.service';
 import UserDTO from './dto/user.dto';
 
 export interface IUsersService {
-	getAllUsers: () => Promise<User[]>;
+	getAllUsers: () => Promise<Omit<User, 'password'>[]>;
 	getUserByEmail: (email: string) => Promise<User>;
 	getUserByID: (id: string) => Promise<User>;
 	getProfile: (userPayload: ITokenPayload) => Promise<UserDTO>;

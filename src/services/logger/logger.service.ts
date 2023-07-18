@@ -4,11 +4,12 @@ import { injectable } from 'inversify';
 import 'reflect-metadata';
 
 @injectable()
-export class LoggerService implements ILogger {
+export class logger implements ILogger {
 	public logger: Logger<object>;
 
 	constructor() {
 		this.logger = new Logger({
+			minLevel: 3,
 			prettyLogTemplate: '{{yyyy}}.{{mm}}.{{dd}} {{hh}}:{{MM}}:{{ss}}:{{ms}}\t{{logLevelName}}\t',
 		});
 	}
@@ -21,5 +22,11 @@ export class LoggerService implements ILogger {
 	}
 	warn(...args: unknown[]): void {
 		this.logger.warn(...args);
+	}
+	debug(...args: unknown[]): void {
+		this.logger.debug(...args);
+	}
+	trace(...args: unknown[]): void {
+		this.logger.trace(...args);
 	}
 }

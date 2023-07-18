@@ -18,45 +18,50 @@ import { GuardMiddleware } from '../common/guard.middleware';
 
 @injectable()
 export class ArticlesController extends BaseController implements IArticlesController {
+	public context = 'articles';
+
 	constructor(
-		@inject(TYPES.ILogger) private loggerService: ILogger,
+		@inject(TYPES.ILogger) private logger: ILogger,
 		@inject(TYPES.IArticlesService) private articleService: IArticlesService,
 	) {
-		super(loggerService);
-		this.bindRoutes([
-			{ path: '/', method: 'get', func: this.getPublishedArticles },
-			{
-				path: '/drafts',
-				method: 'get',
-				func: this.getDraftArticles,
-				middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER])],
-			},
-			{ path: '/:url', method: 'get', func: this.getArticleByURL },
-			{
-				path: '/',
-				method: 'post',
-				func: this.createArticle,
-				middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER]), new ValidateMiddleware(ArticleCreateDto)],
-			},
-			{
-				path: '/:id',
-				method: 'patch',
-				func: this.updateArticle,
-				middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER]), new ValidateMiddleware(ArticleUpdateDto)],
-			},
-			{
-				path: '/:id/publish',
-				method: 'post',
-				func: this.publishArticle,
-				middlewares: [new GuardMiddleware([Role.ADMIN]), new ValidateMiddleware(ArticlePublishDto)],
-			},
-			{
-				path: '/:id',
-				method: 'delete',
-				func: this.deleteArticle,
-				middlewares: [new GuardMiddleware([Role.ADMIN])],
-			},
-		]);
+		super(logger);
+		this.bindRoutes(
+			[
+				{ path: '/', method: 'get', func: this.getPublishedArticles },
+				{
+					path: '/drafts',
+					method: 'get',
+					func: this.getDraftArticles,
+					middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER])],
+				},
+				{ path: '/:url', method: 'get', func: this.getArticleByURL },
+				{
+					path: '/',
+					method: 'post',
+					func: this.createArticle,
+					middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER]), new ValidateMiddleware(ArticleCreateDto)],
+				},
+				{
+					path: '/:id',
+					method: 'patch',
+					func: this.updateArticle,
+					middlewares: [new GuardMiddleware([Role.ADMIN, Role.MANAGER]), new ValidateMiddleware(ArticleUpdateDto)],
+				},
+				{
+					path: '/:id/publish',
+					method: 'post',
+					func: this.publishArticle,
+					middlewares: [new GuardMiddleware([Role.ADMIN]), new ValidateMiddleware(ArticlePublishDto)],
+				},
+				{
+					path: '/:id',
+					method: 'delete',
+					func: this.deleteArticle,
+					middlewares: [new GuardMiddleware([Role.ADMIN])],
+				},
+			],
+			this.context,
+		);
 	}
 
 	async getPublishedArticles(req: Request, res: Response, next: NextFunction): Promise<void> {

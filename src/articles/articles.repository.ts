@@ -41,8 +41,8 @@ export class ArticlesRepository implements IArticlesRepository {
 		});
 	}
 
-	async findArticleByURL(url: string, include: Prisma.ArticleInclude | null): Promise<Article> {
-		return this.databaseService.client.article.findUniqueOrThrow({
+	async findArticleByURL(url: string, include: Prisma.ArticleInclude | null): Promise<Article | null> {
+		return this.databaseService.client.article.findUnique({
 			include,
 			where: { url },
 		});

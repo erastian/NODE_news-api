@@ -10,22 +10,54 @@ import { StatusCodes } from 'http-status-codes';
 import { ICommentsController } from './comments.controller.interface';
 import { ICommentsService } from './comments.service.interface';
 import { CommentCreateDto } from './dto/comment-create.dto';
+import { GuardMiddleware } from '../common/guard.middleware';
+import { Role } from '@prisma/client';
 
 @injectable()
 export class CommentsController extends BaseController implements ICommentsController {
+	public context = 'comments';
+
 	constructor(
-		@inject(TYPES.ILogger) private loggerService: ILogger,
+		@inject(TYPES.ILogger) private logger: ILogger,
 		@inject(TYPES.ICommentsService) private commentsService: ICommentsService,
 	) {
-		super(loggerService);
-		this.bindRoutes([
-			{ path: '/', method: 'post', func: this.createComment, middlewares: [new ValidateMiddleware(CommentCreateDto)] },
-			{ path: '/:id/publish', method: 'post', func: this.publishComment },
-			{ path: '/:id', method: 'delete', func: this.deleteComment },
-			{ path: '/', method: 'get', func: this.findAllComments },
-			{ path: '/article/:articleID', method: 'get', func: this.findAllRelatedPublishedComments },
-			{ path: '/article/:articleID/comments', method: 'get', func: this.findAllRelatedComments },
-		]);
+		super(logger);
+		this.bindRoutes(
+			[
+				{
+					path: '/',
+					method: 'post',
+					func: this.createComment,
+					middlewares: [new ValidateMiddleware(CommentCreateDto), new GuardMiddleware()],
+				},
+				{
+					path: '/:id/publish',
+					method: 'post',
+					func: this.publishComment,
+					middlewares: [new GuardMiddleware([Role.MANAGER, Role.ADMIN])],
+				},
+				{
+					path: '/:id',
+					method: 'delete',
+					func: this.deleteComment,
+					middlewares: [new GuardMiddleware([Role.MANAGER, Role.ADMIN])],
+				},
+				{
+					path: '/',
+					method: 'get',
+					func: this.findAllComments,
+					middlewares: [new GuardMiddleware([Role.MANAGER, Role.ADMIN])],
+				},
+				{ path: '/article/:articleID', method: 'get', func: this.findAllRelatedPublishedComments },
+				{
+					path: '/article/:articleID/comments',
+					method: 'get',
+					func: this.findAllRelatedComments,
+					middlewares: [new GuardMiddleware([Role.MANAGER, Role.ADMIN])],
+				},
+			],
+			this.context,
+		);
 	}
 
 	async createComment(req: Request, res: Response, next: NextFunction): Promise<void> {

@@ -13,25 +13,30 @@ import { GuardMiddleware } from '../common/guard.middleware';
 
 @injectable()
 export class UsersController extends BaseController implements IUsersController {
+	private context = 'users';
+
 	constructor(
-		@inject(TYPES.ILogger) private loggerService: ILogger,
+		@inject(TYPES.ILogger) private logger: ILogger,
 		@inject(TYPES.IUsersService) private usersService: IUsersService,
 	) {
-		super(loggerService);
-		this.bindRoutes([
-			{
-				path: '/',
-				method: 'get',
-				func: this.getAllUsers,
-				middlewares: [new GuardMiddleware([Role.ADMIN])],
-			},
-			{
-				path: '/profile',
-				method: 'get',
-				func: this.getProfile,
-				middlewares: [new GuardMiddleware()],
-			},
-		]);
+		super(logger);
+		this.bindRoutes(
+			[
+				{
+					path: '/',
+					method: 'get',
+					func: this.getAllUsers,
+					middlewares: [new GuardMiddleware([Role.ADMIN])],
+				},
+				{
+					path: '/profile',
+					method: 'get',
+					func: this.getProfile,
+					middlewares: [new GuardMiddleware()],
+				},
+			],
+			this.context,
+		);
 	}
 
 	async getAllUsers(req: Request, res: Response, next: NextFunction): Promise<void> {

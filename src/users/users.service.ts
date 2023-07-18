@@ -12,7 +12,7 @@ import UserDTO from './dto/user.dto';
 export class UsersService implements IUsersService {
 	constructor(@inject(TYPES.IUsersRepository) private usersRepository: IUsersRepository) {}
 
-	getAllUsers(): Promise<User[]> {
+	getAllUsers(): Promise<Omit<User, 'password'>[]> {
 		return this.usersRepository.findAllUsers();
 	}
 

@@ -9,8 +9,8 @@ export interface IArticlesRepository {
 		orderBy: Prisma.ArticleOrderByWithAggregationInput,
 		published: boolean,
 	) => Promise<Article[]>;
-	findArticleByID: (id: string, include: Prisma.ArticleInclude | null) => Promise<Article>;
-	findArticleByURL: (id: string, include: Prisma.ArticleInclude | null) => Promise<Article>;
+	findArticleByID: (id: string) => Promise<Article>;
+	findArticleByURL: (id: string, include: Prisma.ArticleInclude | null) => Promise<Article | null>;
 	createArticle: (data: ArticleCreateDto, authorID: string) => Promise<Article>;
 	updateArticle: (id: string, data: ArticleUpdateDto) => Promise<Article>;
 	publishArticle: (id: string, isPublished: boolean) => Promise<Article>;

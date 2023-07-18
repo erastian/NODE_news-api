@@ -4,7 +4,7 @@ import { IConfigService } from '../config/config.service.interface';
 import { TYPES } from '../constants/constants';
 import bcrypt from 'bcryptjs';
 import { StatusCodes } from 'http-status-codes';
-import { HTTPError } from '../services/errors/http-error.class';
+import { Exception } from '../services/errors/exception.class';
 import jwt, { Secret } from 'jsonwebtoken';
 import { IMailerService } from '../mailer/mailer.service.interface';
 import { ObjectId } from 'bson';
@@ -45,11 +45,11 @@ export class AuthService implements IAuthService {
 		await this.mailerService.sendActivationMail(email, username, activationURL);
 
 		return user;
-	}
+	} // TODO: Update URL for frontend urls using
 
 	async activateUser(id: string): Promise<void> {
 		if (!ObjectId.isValid(id)) {
-			throw new HTTPError(StatusCodes.BAD_REQUEST, 'Wrong activation ID');
+			throw new Exception(StatusCodes.BAD_REQUEST, 'Wrong activation ID', AuthService.name);
 		}
 
 		const user = await this.usersService.getUserByID(id);
@@ -57,9 +57,9 @@ export class AuthService implements IAuthService {
 		await this.usersService.activateUser(user.id);
 	}
 
-	async restorePassword(id: string, newPassword: string): Promise<void> {
+	async updatePassword(id: string, newPassword: string): Promise<void> {
 		if (!ObjectId.isValid(id)) {
-			throw new HTTPError(StatusCodes.UNAUTHORIZED, 'Wrong restoration ID');
+			throw new Exception(StatusCodes.UNAUTHORIZED, 'Wrong restoration ID', AuthService.name);
 		}
 
 		const existedUser = await this.usersService.getUserByID(id);
@@ -70,10 +70,10 @@ export class AuthService implements IAuthService {
 
 	async sendPasswordRestorationEmail(user: User): Promise<void> {
 		const { token: restoreToken } = this.getAuthToken(user);
-		const restorationURL = `${this.configService.get('CLIENT_URL')}/restore-password?token=${restoreToken}`;
+		const restorationURL = `${this.configService.get('CLIENT_URL')}/auth/update-password?token=${restoreToken}`;
 
 		await this.mailerService.sendRestorePasswordLink(user.email, user.username, restorationURL);
-	}
+	} // TODO: Update URL for frontend urls using
 
 	async userIsValidated(email: string, rawPassword: string): Promise<User> {
 		const user = await this.usersService.getUserByEmail(email);
@@ -85,7 +85,7 @@ export class AuthService implements IAuthService {
 	async comparePassword(rawPassword: string, hashedPassword: string): Promise<void> {
 		const compareResult = await bcrypt.compare(rawPassword, hashedPassword);
 		if (!compareResult) {
-			throw new HTTPError(StatusCodes.UNAUTHORIZED, 'Bad credentials');
+			throw new Exception(StatusCodes.UNAUTHORIZED, 'Bad credentials', AuthService.name);
 		}
 	}
 
