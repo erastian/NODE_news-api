@@ -52,6 +52,10 @@ export class ArticlesService implements IArticlesService {
 			},
 		});
 
+		if (!article) {
+			throw new Exception(StatusCodes.NOT_FOUND, 'Article not found', ArticlesService.name);
+		}
+
 		if (!article.isPublished) {
 			throw new Exception(StatusCodes.NOT_FOUND, 'Article not found', ArticlesService.name);
 		}

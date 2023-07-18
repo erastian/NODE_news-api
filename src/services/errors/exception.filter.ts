@@ -14,7 +14,6 @@ export class ExceptionFilter implements IExceptionFilter {
 	constructor(@inject(TYPES.ILogger) private logger: ILogger) {}
 
 	catch(err: Error | Exception | JsonWebTokenError, req: Request, res: Response, next: NextFunction): void {
-		console.log(err.constructor);
 		if (err instanceof Exception) {
 			this.logger.error(`[${err.context}] ${err.statusCode} ${err.name}: ${err.message}.`);
 			res.status(err.statusCode).send({ err: err.message });

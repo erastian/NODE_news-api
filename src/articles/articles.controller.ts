@@ -15,7 +15,6 @@ import { ArticleUpdateDto } from './dto/article-update.dto';
 import { ArticlePublishDto } from './dto/article-publish.dto';
 
 import { GuardMiddleware } from '../common/guard.middleware';
-import { Exception } from '../services/errors/exception.class';
 
 @injectable()
 export class ArticlesController extends BaseController implements IArticlesController {
@@ -97,9 +96,7 @@ export class ArticlesController extends BaseController implements IArticlesContr
 
 			this.ok(res, result);
 		} catch (e) {
-			return next(
-				new Exception(StatusCodes.NOT_FOUND, `Article "/${req.params.url}" not found`, ArticlesController.name),
-			);
+			return next(e);
 		}
 	}
 
