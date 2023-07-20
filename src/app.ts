@@ -1,5 +1,6 @@
 import express, { Express } from 'express';
 import { Server } from 'http';
+import cors from 'cors';
 import { ILogger } from './services/logger/logger.interface';
 import { inject, injectable } from 'inversify';
 import { TYPES } from './constants/constants';
@@ -40,6 +41,12 @@ export class App {
 
 	useMiddleware(): void {
 		this.app.use(express.json());
+		this.app.use(
+			cors({
+				credentials: true,
+				origin: this.configService.get('CLIENT_URL'),
+			}),
+		);
 		const authMiddleware = new AuthMiddleware(this.configService.get('JWT_SECRET'));
 		this.app.use(authMiddleware.execute.bind(authMiddleware));
 	}
