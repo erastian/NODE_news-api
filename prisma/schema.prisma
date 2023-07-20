@@ -64,7 +64,7 @@ model Comment {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   isPublished Boolean  @default(false)
   commentBody String
-  article     Article  @relation(fields: [articleID], references: [id])
+  article     Article  @relation(fields: [articleID], references: [id], onDelete: Cascade)
   articleID   String   @db.ObjectId
   author      User     @relation(fields: [authorID], references: [id])
   authorID    String   @db.ObjectId
