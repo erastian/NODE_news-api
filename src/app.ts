@@ -1,6 +1,7 @@
 import express, { Express } from 'express';
 import { Server } from 'http';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import { ILogger } from './services/logger/logger.interface';
 import { inject, injectable } from 'inversify';
 import { TYPES } from './constants/constants';
@@ -41,6 +42,7 @@ export class App {
 
 	useMiddleware(): void {
 		this.app.use(express.json());
+		this.app.use(cookieParser());
 		this.app.use(
 			cors({
 				credentials: true,

@@ -99,7 +99,9 @@ export class AuthService implements IAuthService {
 		const token = jwt.sign(tokenPayload, this.configService.get('JWT_SECRET') as Secret, {
 			expiresIn: this.configService.get('JWT_ACCESS_SECRET_EXPIRATION'),
 		});
-		const cookie = `accessToken=${token}; HttpOnly; Max-Age=${this.configService.get('JWT_ACCESS_SECRET_EXPIRATION')};`;
+		const cookie = `accessToken=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
+			'JWT_ACCESS_SECRET_EXPIRATION',
+		)};`;
 
 		return { token, cookie };
 	}
@@ -109,7 +111,7 @@ export class AuthService implements IAuthService {
 		const token = jwt.sign(tokenPayload, this.configService.get('JWT_REFRESH_SECRET'), {
 			expiresIn: this.configService.get('JWT_REFRESH_SECRET_EXPIRATION'),
 		});
-		const cookie = `refreshToken=${token}; HttpOnly; Max-Age=${this.configService.get(
+		const cookie = `refreshToken=${token}; HttpOnly; Path=/; SameSite=None; Secure; Max-Age=${this.configService.get(
 			'JWT_REFRESH_SECRET_EXPIRATION',
 		)};`;
 
