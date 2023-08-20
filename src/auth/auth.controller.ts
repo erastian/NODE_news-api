@@ -72,23 +72,20 @@ export class AuthController extends BaseController implements IAuthController {
 
 	async getToken(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
-			const { refreshTokenFromRequest } = req.cookies;
+			const { refreshToken } = req.cookies;
 
-			if (!refreshTokenFromRequest) {
+			if (!refreshToken) {
 				return next(new Exception(StatusCodes.FORBIDDEN, 'Access denied.', AuthController.name));
 			}
 
-			const userFromToken = jwt.verify(
-				refreshTokenFromRequest,
-				this.configService.get('JWT_REFRESH_SECRET'),
-			) as ITokenPayload;
+			const userFromToken = jwt.verify(refreshToken, this.configService.get('JWT_REFRESH_SECRET')) as ITokenPayload;
 
 			const user = await this.usersService.getUserByEmail(userFromToken.email);
 
 			const { token: accessToken } = this.authService.getAuthToken(user);
-			const { cookie: refreshToken } = this.authService.getRefreshToken(user);
+			const { cookie: refreshTokenCookie } = this.authService.getRefreshToken(user);
 
-			res.setHeader('Set-Cookie', [refreshToken]);
+			res.setHeader('Set-Cookie', [refreshTokenCookie]);
 
 			this.ok(res, { accessToken });
 		} catch (e) {
