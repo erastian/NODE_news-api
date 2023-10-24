@@ -13,6 +13,9 @@ export class ArticleCreateDto implements Omit<Article, 'authorID' | 'id'> {
 	@IsEmpty()
 	isPublished: boolean;
 
+	@IsEmpty()
+	isPinned: boolean;
+
 	@IsOptional()
 	@IsString()
 	description: string;

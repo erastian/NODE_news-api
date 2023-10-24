@@ -15,6 +15,7 @@ import { ArticleUpdateDto } from './dto/article-update.dto';
 import { ArticlePublishDto } from './dto/article-publish.dto';
 
 import { GuardMiddleware } from '../common/guard.middleware';
+import { ArticlePinToTopDto } from './dto/article-pin-to-top.dto';
 
 @injectable()
 export class ArticlesController extends BaseController implements IArticlesController {
@@ -54,6 +55,12 @@ export class ArticlesController extends BaseController implements IArticlesContr
 					middlewares: [new GuardMiddleware([Role.ADMIN]), new ValidateMiddleware(ArticlePublishDto)],
 				},
 				{
+					path: '/:id/pin',
+					method: 'post',
+					func: this.pinToTopArticle,
+					middlewares: [new GuardMiddleware([Role.ADMIN]), new ValidateMiddleware(ArticlePinToTopDto)],
+				},
+				{
 					path: '/:id',
 					method: 'delete',
 					func: this.deleteArticle,
@@ -68,8 +75,9 @@ export class ArticlesController extends BaseController implements IArticlesContr
 		try {
 			const offset = Number(req.query.offset) || 0;
 			const limit = Number(req.query.limit) || 10;
+			const pinned = Boolean(req.query.pinned) || false;
 
-			const result = await this.articleService.findPublishedArticles(offset, limit);
+			const result = await this.articleService.findPublishedArticles(offset, limit, pinned);
 			this.ok(res, result);
 		} catch (e) {
 			next(e);
@@ -129,6 +137,19 @@ export class ArticlesController extends BaseController implements IArticlesContr
 			const { isPublished } = req.body;
 
 			const result = await this.articleService.publishArticle(id, isPublished);
+
+			this.ok(res, result);
+		} catch (e) {
+			return next(e);
+		}
+	}
+
+	async pinToTopArticle(req: Request, res: Response, next: NextFunction): Promise<void> {
+		try {
+			const id = req.params.id;
+			const { isPinned } = req.body;
+
+			const result = await this.articleService.pinToTopArticle(id, isPinned);
 
 			this.ok(res, result);
 		} catch (e) {

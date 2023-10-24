@@ -24,14 +24,15 @@ export class ArticlesService implements IArticlesService {
 		limit: number,
 		orderBy: Prisma.ArticleOrderByWithAggregationInput,
 		published: boolean,
+		pinned?: boolean,
 	): Promise<IPaginator<Article>> {
-		const data = await this.articlesRepository.findArticles(offset, limit, orderBy, published);
+		const data = await this.articlesRepository.findArticles(offset, limit, orderBy, published, pinned);
 
 		return { offset, limit, data };
 	}
 
-	async findPublishedArticles(offset: number, limit: number): Promise<IPaginator<Article>> {
-		return await this.getArticles(offset, limit, { id: 'desc' }, true);
+	async findPublishedArticles(offset: number, limit: number, pinned?: boolean): Promise<IPaginator<Article>> {
+		return await this.getArticles(offset, limit, { id: 'desc' }, true, pinned);
 	}
 
 	async findDraftArticles(offset: number, limit: number): Promise<IPaginator<Article>> {
@@ -79,6 +80,10 @@ export class ArticlesService implements IArticlesService {
 
 	publishArticle(articleID: string, isPublished: boolean): Promise<Article> {
 		return this.articlesRepository.publishArticle(articleID, isPublished);
+	}
+
+	pinToTopArticle(articleID: string, isPinned: boolean): Promise<Article> {
+		return this.articlesRepository.pinToTopArticle(articleID, isPinned);
 	}
 
 	async deleteArticle(articleID: string, user: ITokenPayload): Promise<Article> {

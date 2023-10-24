@@ -16,8 +16,9 @@ export class ArticlesRepository implements IArticlesRepository {
 		limit: number,
 		orderBy: Prisma.ArticleOrderByWithAggregationInput,
 		published: boolean,
+		pinned?: boolean,
 	): Promise<Article[]> {
-		const query = { where: { isPublished: published } };
+		const query = { where: { isPublished: published, isPinned: pinned } };
 
 		return this.databaseService.client.article.findMany({
 			include: {
@@ -63,6 +64,10 @@ export class ArticlesRepository implements IArticlesRepository {
 
 	async publishArticle(id: string, isPublished: boolean): Promise<Article> {
 		return this.databaseService.client.article.update({ where: { id }, data: { isPublished } });
+	}
+
+	async pinToTopArticle(id: string, isPinned: boolean): Promise<Article> {
+		return this.databaseService.client.article.update({ where: { id }, data: { isPinned } });
 	}
 
 	async deleteArticle(id: string): Promise<Article> {
