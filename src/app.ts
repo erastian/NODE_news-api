@@ -5,7 +5,6 @@ import cookieParser from 'cookie-parser';
 import { ILogger } from './services/logger/logger.interface';
 import { inject, injectable } from 'inversify';
 import { TYPES } from './constants/constants';
-import { PORT } from './constants/constants';
 import { StatusCodes } from 'http-status-codes';
 import 'reflect-metadata';
 import { IExceptionFilter } from './services/errors/exception.filter.interface';
@@ -37,7 +36,7 @@ export class App {
 		@inject(TYPES.IUsersController) private usersController: IUsersController,
 	) {
 		this.app = express();
-		this.port = PORT;
+		this.port = Number(this.configService.get('SERVER_PORT'));
 	}
 
 	useMiddleware(): void {
