@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
+    "start": "node dist/app.js",
     "dev": "nodemon",
     "build": "tsc",
     "lint": "eslint ./src/**",
